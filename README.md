@@ -14,6 +14,11 @@ git checkout
 `git clone https://github.com/mastalx/RESTPerf.git`
 
 
+### updating
+
+`git pull `
+
+
 Gradle (gradlew) Tasks
 ---------------------
 
@@ -25,7 +30,7 @@ Important use gradlew.bat instead of gradle.bat.
 
 ### Build Jar (Deployment)
 
-`radlew jar --refresh-dependencies`
+`gradlew jar --refresh-dependencies`
 
 
 ### TEST
