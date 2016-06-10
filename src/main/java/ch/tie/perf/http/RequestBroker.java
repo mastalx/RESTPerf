@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -16,7 +17,8 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,14 +87,17 @@ public class RequestBroker implements Closeable {
       final StatusLine statusLine = response.getStatusLine();
       if (statusLine.getStatusCode() == 500) {
         final String responseContent = EntityUtils.toString(response.getEntity(), ENCODING);
-        LOGGER.error(responseContent);
+        throw new RuntimeException(
+            "error 500 occured request:" + request + System.lineSeparator() + " response: " + responseContent);
       }
       // Map the content to the requested result class
 
 
       InputStream content = response.getEntity().getContent();
       if (byte[].class.equals(resultClass)) {
-        return (T) org.apache.commons.io.IOUtils.toByteArray(content);
+        @SuppressWarnings("unchecked")
+        T byteArray = (T) IOUtils.toByteArray(content);
+        return byteArray;
       } else {
         return objectMapper.readValue(content, resultClass);
       }
@@ -109,7 +114,14 @@ public class RequestBroker implements Closeable {
     final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
     credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
-    return HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
+    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+    cm.setMaxTotal(400);
+    cm.setDefaultMaxPerRoute(40);
+    return HttpClients.custom()
+        .setDefaultCredentialsProvider(credentialsProvider)
+        .setConnectionManager(cm)
+        .setConnectionManagerShared(true)
+        .build();
 
   }
 

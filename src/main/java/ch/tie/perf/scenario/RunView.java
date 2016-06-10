@@ -1,12 +1,14 @@
 package ch.tie.perf.scenario;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.tie.perf.ScenarioRunner;
 import ch.tie.perf.http.RequestBroker;
 import ch.tie.perf.model.Obj;
 
@@ -15,51 +17,46 @@ public class RunView extends StatisticsScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunView.class);
 
+
   private final RequestBroker rb;
   private final String menuLink;
+  private final ScenarioRunner scenarioRunner;
 
-  public RunView(String menuLink, RequestBroker rb) {
+
+  private final List<Future<? extends Scenario>> taskList = new ArrayList<>();
+
+  public RunView(String menuLink, RequestBroker rb, ScenarioRunner scenarioRunner) {
     this.menuLink = menuLink;
     this.rb = rb;
+    this.scenarioRunner = scenarioRunner;
 
   }
 
   @Override
   public RunView call() throws Exception {
+    try {
 
+      String viewLink = getViewLink();
+      LOGGER.debug("got view link:" + viewLink);
 
-    String viewLink = getViewLink();
+      Files.createDirectories(RunGetBytes.BINARIES_PATH);
 
-    Files.createDirectories(Paths.get("binaries"));
+      RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", ".pdf", rb);
+      Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
+      taskList.add(viewPdfFuture);
 
+      String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
+      RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", ".jpg", rb);
+      Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
+      taskList.add(viewThumbnailFuture);
 
-    byte[] pdfBytes = getBytes(viewLink, "GET_PDF");
-    Path temppdf = Files.createTempFile(Paths.get("binaries"), "", ".pdf");
-    Files.write(temppdf, pdfBytes);
-
-
-    String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
-    byte[] thumbnailBytes = getBytes(thumbnailLink, "GET_THUMBNAIL");
-    Path tempjpg = Files.createTempFile(Paths.get("binaries"), "", ".jpg");
-    Files.write(tempjpg, thumbnailBytes);
-
+      LOGGER.debug("done view with link:" + viewLink);
+    } catch (Exception e) {
+      LOGGER.error("error in view:", e);
+    }
     return this;
   }
 
-
-  private byte[] getBytes(String viewLink, String key) {
-
-    try {
-      long start = System.nanoTime();
-      byte[] bytes = rb.doGet(viewLink, byte[].class);
-      long durationGetBytes = System.nanoTime() - start;
-      updateStatistics(durationGetBytes, key);
-      return bytes;
-    } catch (Exception e) {
-      LOGGER.error(e);
-    }
-    return new byte[]{};
-  }
 
   private String getViewLink() {
     long start = System.nanoTime();
@@ -68,6 +65,11 @@ public class RunView extends StatisticsScenario {
     updateStatistics(durationGetMenu, "GET_DOCUMENT_MENU");
     String viewLink = menu.getLink("VIEW").getHref();
     return viewLink;
+  }
+
+  @Override
+  public List<Future<? extends Scenario>> getSpawnedTasks() {
+    return taskList;
   }
 
 

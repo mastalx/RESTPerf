@@ -1,5 +1,7 @@
 package ch.tie.perf;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -11,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 
 import ch.tie.perf.scenario.Scenario;
 
-public class ScenarioRunner {
+public class ScenarioRunner implements Closeable {
 
   private static final Logger LOGGER = LogManager.getLogger(ScenarioRunner.class);
   private final ExecutorService executorService;
@@ -35,7 +37,7 @@ public class ScenarioRunner {
   }
 
 
-  public void shutDownPerformanceTest() {
+  private void shutDownPerformanceTest() {
 
     executorService.shutdown(); // Disable new tasks from being submitted
     try {
@@ -49,5 +51,11 @@ public class ScenarioRunner {
       LOGGER.error(ie);
       executorService.shutdownNow();
     }
+  }
+
+
+  @Override
+  public void close() throws IOException {
+    shutDownPerformanceTest();
   }
 }
