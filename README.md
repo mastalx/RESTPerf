@@ -11,20 +11,20 @@ Gradle (gradlew) Tasks
 
 ### clone
 
-'git clone https://github.com/mastalx/RESTPerf.git'
+`git clone https://github.com/mastalx/RESTPerf.git`
 
 Important use gradlew.bat instead of gradle.bat.
 
 ### Eclipse Setup Task
 
-'gradlew cleaneclipse eclipse  --refresh-dependencies'
+`gradlew cleaneclipse eclipse  --refresh-dependencies`
 
 ### Build Jar (Deployment)
 
-'gradlew jar --refresh-dependencies'
+`radlew jar --refresh-dependencies`
 
 
 ### TEST
 
-'gradlew test --refresh-dependencies'
+`gradlew test --refresh-dependencies`
 
