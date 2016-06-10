@@ -6,12 +6,16 @@ Install Prerequisites
 
 * JDK 7
 
-Gradle (gradlew) Tasks
----------------------
 
+git checkout
+------------
 ### clone
 
 `git clone https://github.com/mastalx/RESTPerf.git`
+
+
+Gradle (gradlew) Tasks
+---------------------
 
 Important use gradlew.bat instead of gradle.bat.
 
