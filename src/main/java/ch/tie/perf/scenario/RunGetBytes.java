@@ -4,10 +4,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Future;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -61,10 +58,5 @@ public class RunGetBytes extends StatisticsScenario {
     long durationGetBytes = System.nanoTime() - start;
     updateStatistics(durationGetBytes, key);
     return bytes;
-  }
-
-  @Override
-  public List<Future<Scenario>> getSpawnedTasks() {
-    return new ArrayList<Future<Scenario>>();
   }
 }
