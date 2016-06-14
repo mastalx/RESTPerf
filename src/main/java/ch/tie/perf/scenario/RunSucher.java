@@ -1,8 +1,6 @@
 package ch.tie.perf.scenario;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 
@@ -22,9 +20,6 @@ public class RunSucher extends StatisticsScenario {
   private final String initialURI;
   private final String pid;
   private final RequestBroker requestBroker;
-
-  private final List<Future<? extends Scenario>> taskList = new ArrayList<>();
-
 
   public RunSucher(ScenarioRunner scenarioRunner, String initialURI, String pid, RequestBroker requestBroker) {
     this.scenarioRunner = scenarioRunner;
@@ -78,7 +73,7 @@ public class RunSucher extends StatisticsScenario {
       String menuLink = searchItem.getLink("object").getHref();
       RunView view = new RunView(menuLink, rb, scenarioRunner);
       Future<Scenario> startedCall = scenarioRunner.run(view);
-      taskList.add(startedCall);
+      addChildTask(startedCall);
     }
   }
 
@@ -95,12 +90,6 @@ public class RunSucher extends StatisticsScenario {
     String suchenLink = finder.getLink("SUCHEN").getHref();
     LOGGER.debug("got suchenLink:" + suchenLink);
     return suchenLink;
-  }
-
-
-  @Override
-  public List<Future<? extends Scenario>> getSpawnedTasks() {
-    return taskList;
   }
 
 }

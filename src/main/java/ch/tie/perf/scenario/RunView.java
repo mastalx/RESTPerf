@@ -1,8 +1,6 @@
 package ch.tie.perf.scenario;
 
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,8 +21,6 @@ public class RunView extends StatisticsScenario {
   private final ScenarioRunner scenarioRunner;
 
 
-  private final List<Future<? extends Scenario>> taskList = new ArrayList<>();
-
   public RunView(String menuLink, RequestBroker rb, ScenarioRunner scenarioRunner) {
     this.menuLink = menuLink;
     this.rb = rb;
@@ -43,12 +39,12 @@ public class RunView extends StatisticsScenario {
 
       RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", ".pdf", rb);
       Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
-      taskList.add(viewPdfFuture);
+      addChildTask(viewPdfFuture);
 
       String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
       RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", ".jpg", rb);
       Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
-      taskList.add(viewThumbnailFuture);
+      addChildTask(viewThumbnailFuture);
 
       LOGGER.debug("done view with link:" + viewLink);
     } catch (Exception e) {
@@ -66,11 +62,5 @@ public class RunView extends StatisticsScenario {
     String viewLink = menu.getLink("VIEW").getHref();
     return viewLink;
   }
-
-  @Override
-  public List<Future<? extends Scenario>> getSpawnedTasks() {
-    return taskList;
-  }
-
 
 }

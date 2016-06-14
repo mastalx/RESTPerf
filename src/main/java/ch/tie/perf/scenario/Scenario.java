@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 
 public interface Scenario extends Callable<Scenario> {
 
-  public Map<String, Map<Long, Long>> getStatistics();
+  public Map<String, List<Pair<Long, Long>>> getStatistics();
 
-  public List<Future<? extends Scenario>> getSpawnedTasks();
+  public List<Future<Scenario>> getSpawnedTasks();
 }

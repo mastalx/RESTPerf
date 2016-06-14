@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.scenario.Pair;
 import ch.tie.perf.scenario.RunSucher;
 import ch.tie.perf.scenario.Scenario;
 
@@ -33,13 +34,13 @@ public class ScenarioRunnerTest {
         }
 
         @Override
-        public Map<String, Map<Long, Long>> getStatistics() {
+        public Map<String, List<Pair<Long, Long>>> getStatistics() {
           // TODO Auto-generated method stub
           return null;
         }
 
         @Override
-        public List<Future<? extends Scenario>> getSpawnedTasks() {
+        public List<Future<Scenario>> getSpawnedTasks() {
           // TODO Auto-generated method stub
           return null;
         }
@@ -48,6 +49,7 @@ public class ScenarioRunnerTest {
   }
 
   @Test
+  @Ignore
   public void runSucherOnKons100() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -59,25 +61,23 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
-      List<Future<? extends Scenario>> taskList = new ArrayList<>();
+      List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 300; i++) {
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
 
-      StatisticsHelper statsHelper = new StatisticsHelper();
-      ConcurrentHashMap<String, Map<Long, Long>> mergedStatistics = statsHelper.mergeStatistics(taskList);
+      StatisticsCollector statsHelper = new StatisticsCollector();
+      statsHelper.collectAndPrintStatistics(taskList, "3x100_");
 
-
-      StatisticsHelper printer = new StatisticsHelper();
-      printer.printStatistics("3x100_", mergedStatistics);
 
     }
 
   }
 
   @Test
+  @Ignore
   public void runSucherOnKons300() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -89,22 +89,20 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
-      List<Future<? extends Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 100; i++) {
+      List<Future<Scenario>> taskList = new ArrayList<>();
+      for (int i = 0; i < 2; i++) {
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
-
-      StatisticsHelper statsHelper = new StatisticsHelper();
-      ConcurrentHashMap<String, Map<Long, Long>> mergedStats = statsHelper.mergeStatistics(taskList);
-
-      statsHelper.printStatistics("1x300_", mergedStats);
+      StatisticsCollector statsHelper = new StatisticsCollector();
+      statsHelper.collectAndPrintStatistics(taskList, "1x300_");
     }
 
   }
 
   @Test
+
   public void runSucherOnKons30() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -116,15 +114,15 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
-      List<Future<? extends Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 1000; i++) {
+      List<Future<Scenario>> taskList = new ArrayList<>();
+      for (int i = 0; i < 2; i++) {
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
-      StatisticsHelper statsHelper = new StatisticsHelper();
-      ConcurrentHashMap<String, Map<Long, Long>> mergedStats = statsHelper.mergeStatistics(taskList);
-      statsHelper.printStatistics("10x30_", mergedStats);
+      StatisticsCollector statsHelper = new StatisticsCollector();
+      String experimentName = "10x30";
+      statsHelper.collectAndPrintStatistics(taskList, experimentName);
     }
 
   }

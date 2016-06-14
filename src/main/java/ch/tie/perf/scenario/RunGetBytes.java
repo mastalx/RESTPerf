@@ -64,7 +64,7 @@ public class RunGetBytes extends StatisticsScenario {
   }
 
   @Override
-  public List<Future<? extends Scenario>> getSpawnedTasks() {
-    return new ArrayList<Future<? extends Scenario>>();
+  public List<Future<Scenario>> getSpawnedTasks() {
+    return new ArrayList<Future<Scenario>>();
   }
 }
