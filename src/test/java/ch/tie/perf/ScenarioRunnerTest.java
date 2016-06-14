@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.junit.Ignore;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import ch.tie.perf.http.RequestBroker;
@@ -17,6 +18,8 @@ import ch.tie.perf.scenario.Scenario;
 
 public class ScenarioRunnerTest {
 
+
+  private static final Logger LOGGER = LogManager.getLogger(ScenarioRunnerTest.class);
 
   private final static String KONS_REST2 = "http://10.5.69.18:7501";
 
@@ -49,7 +52,6 @@ public class ScenarioRunnerTest {
   }
 
   @Test
-  @Ignore
   public void runSucherOnKons100() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -57,27 +59,27 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3013955";
+    String experimentName = "30x100_";
+
+    LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
-      RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 300; i++) {
+      for (int i = 0; i < 30; i++) {
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
-
       StatisticsCollector statsHelper = new StatisticsCollector();
-      statsHelper.collectAndPrintStatistics(taskList, "3x100_");
-
-
+      statsHelper.collectAndPrintStatistics(taskList, experimentName);
     }
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 
   }
 
   @Test
-  @Ignore
   public void runSucherOnKons300() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -85,24 +87,26 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3540616";
+    String experimentName = "10x300_";
+    LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
-      RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 2; i++) {
+      for (int i = 0; i < 10; i++) {
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
       StatisticsCollector statsHelper = new StatisticsCollector();
-      statsHelper.collectAndPrintStatistics(taskList, "1x300_");
+      statsHelper.collectAndPrintStatistics(taskList, experimentName);
     }
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 
   }
 
   @Test
-
   public void runSucherOnKons30() throws IOException, InterruptedException, ExecutionException {
 
     String iengineUser = "TIESUMSE";
@@ -110,20 +114,22 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
+    String experimentName = "100x30";
+    LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
-      RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 2; i++) {
+      for (int i = 0; i < 100; i++) {
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
 
       StatisticsCollector statsHelper = new StatisticsCollector();
-      String experimentName = "10x30";
       statsHelper.collectAndPrintStatistics(taskList, experimentName);
     }
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 
   }
 }

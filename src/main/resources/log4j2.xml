@@ -56,7 +56,7 @@
 	</Appenders>
 	<Loggers>
 		<Logger name="ch.tie" level="trace" additivity="false">
-			<appender-ref ref="trace-log" level="trace" />
+			<!-- appender-ref ref="trace-log" level="trace" /-->
 			<appender-ref ref="debug-log" level="debug" />
 			<appender-ref ref="info-log" level="info" />
 			<appender-ref ref="error-log" level="error" />
