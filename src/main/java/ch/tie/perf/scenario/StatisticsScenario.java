@@ -23,12 +23,15 @@ public abstract class StatisticsScenario implements Scenario {
 
   protected void updateStatistics(long durationInNanos, String key) {
 
-    List<Pair<Long, Long>> map = statistics.getOrDefault(key, new ArrayList<Pair<Long, Long>>());
+    List<Pair<Long, Long>> map = statistics.get(key);
+    if (map == null) {
+      map = new ArrayList<>();
+      statistics.put(key, map);
+    }
     Pair<Long, Long> entry = new Pair<>(System.nanoTime(), durationInNanos / 1000000);
     LOGGER.trace("updating Statistics:" + key + ", value: " + entry);
     map.add(entry);
 
-    statistics.putIfAbsent(key, map);
   }
 
   public void addChildTask(Future<Scenario> childTask) {

@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedList;
@@ -99,7 +100,6 @@ public class StatisticsCollector {
 
   private void sortEntries(List<Pair<Long, Long>> categoryStats) {
 
-
     Comparator<Pair<Long, Long>> longComparator = new Comparator<Pair<Long, Long>>() {
 
       @Override
@@ -107,8 +107,7 @@ public class StatisticsCollector {
         return Long.compare(o1.getLeft(), o2.getRight());
       }
     };
-
-    categoryStats.sort(longComparator);
+    Collections.sort(categoryStats, longComparator);
   }
 
 }
