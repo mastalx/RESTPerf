@@ -59,14 +59,14 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3013955";
-    String experimentName = "30x100_";
+    String experimentName = "3x100_";
 
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 30; i++) {
+      for (int i = 0; i < 3; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
@@ -87,13 +87,13 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3540616";
-    String experimentName = "10x300_";
+    String experimentName = "1x300_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 1; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
@@ -114,13 +114,13 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
-    String experimentName = "100x30";
+    String experimentName = "10x30";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 100; i++) {
+      for (int i = 0; i < 10; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);

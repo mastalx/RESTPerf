@@ -1,10 +1,12 @@
 package ch.tie.perf.scenario;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.hateoas.Link;
 
 import ch.tie.perf.ScenarioRunner;
 import ch.tie.perf.http.RequestBroker;
@@ -32,19 +34,16 @@ public class RunView extends StatisticsScenario {
   public RunView call() throws Exception {
     try {
 
-      String viewLink = getViewLink();
+      Files.createDirectories(RunGetBytes.BINARIES_PATH);
+      Obj menu = getMenu();
+      String viewLink = menu.getLink("VIEW").getHref();
+
       LOGGER.debug("got view link:" + viewLink);
 
-      Files.createDirectories(RunGetBytes.BINARIES_PATH);
+      getPDF(viewLink);
+      getOldThumnbail(viewLink);
+      getNewThumbnail(menu);
 
-      RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", ".pdf", rb);
-      Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
-      addChildTask(viewPdfFuture);
-
-      String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
-      RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", ".jpg", rb);
-      Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
-      addChildTask(viewThumbnailFuture);
 
       LOGGER.debug("done view with link:" + viewLink);
     } catch (Exception e) {
@@ -53,14 +52,41 @@ public class RunView extends StatisticsScenario {
     return this;
   }
 
+  private void getNewThumbnail(Obj menu) {
+    Link newThumbnailLink = menu.getLink("VIEW_THUMBNAIL");
+    if (newThumbnailLink != null) {
+      String thumbnailLink = newThumbnailLink.getHref();
+      thumbnailLink = thumbnailLink + "?imageType=THUMBNAIL_M";
+      LOGGER.debug("got thumbnail link without protocol:" + thumbnailLink);
+      RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL_NO_PROTOCOL", ".jpg", rb);
+      Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
+      addChildTask(viewThumbnailFuture);
+    }
+  }
 
-  private String getViewLink() {
+
+  private void getOldThumnbail(String viewLink) {
+    String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
+    LOGGER.debug("got thumbnail link with protocol:" + thumbnailLink);
+    RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", ".jpg", rb);
+    Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
+    addChildTask(viewThumbnailFuture);
+  }
+
+  private String getPDF(String viewLink) throws IOException {
+    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", ".pdf", rb);
+    Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
+    addChildTask(viewPdfFuture);
+    return viewLink;
+  }
+
+
+  private Obj getMenu() {
     long start = System.nanoTime();
     Obj menu = rb.doGet(menuLink, Obj.class);
     long durationGetMenu = System.nanoTime() - start;
     updateStatistics(durationGetMenu, "GET_DOCUMENT_MENU");
-    String viewLink = menu.getLink("VIEW").getHref();
-    return viewLink;
+    return menu;
   }
 
 }

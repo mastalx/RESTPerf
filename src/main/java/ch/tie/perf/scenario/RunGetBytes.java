@@ -1,12 +1,11 @@
 package ch.tie.perf.scenario;
 
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -41,10 +40,7 @@ public class RunGetBytes extends StatisticsScenario {
     String fileName = viewLink.substring(lastIndexOfSlash + 1);
     fileName = fileName.replace("?", "").replace("=", "") + UUID.randomUUID();
     Path temppdf = Paths.get(BINARIES_PATH.toString(), fileName + fileExtension);
-
-    try (OutputStream os = new FileOutputStream(temppdf.toFile())) {
-      IOUtils.write(pdfBytes, os);
-    }
+    Files.write(temppdf, pdfBytes, StandardOpenOption.CREATE);
 
     LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
 
