@@ -35,10 +35,8 @@ public class StatisticsCollector {
     Date now = new Date();
     String fileNamePrefix = filenamePrefixFormat.format(now) + "_" + experiment + "_";
 
-
     LinkedList<Future<Scenario>> queue = new LinkedList<>(tasks);
 
-    int cnt = 0;
     while (!queue.isEmpty()) {
       Future<Scenario> task = queue.pollFirst();
       try {
@@ -50,12 +48,6 @@ public class StatisticsCollector {
       } catch (InterruptedException | ExecutionException e) {
         LOGGER.error("error while getting task result", e);
       }
-      if (cnt == 1000) {
-        printStatistics(fileNamePrefix, mergedStats);
-        mergedStats.clear();
-        cnt = 0;
-      }
-      cnt++;
     }
     printStatistics(fileNamePrefix, mergedStats);
   }
@@ -104,7 +96,7 @@ public class StatisticsCollector {
 
       @Override
       public int compare(Pair<Long, Long> o1, Pair<Long, Long> o2) {
-        return Long.compare(o1.getLeft(), o2.getRight());
+        return Long.compare(o1.getLeft(), o2.getLeft());
       }
     };
     Collections.sort(categoryStats, longComparator);

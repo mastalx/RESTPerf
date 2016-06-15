@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,10 +29,10 @@ public abstract class StatisticsScenario implements Scenario {
       map = new ArrayList<>();
       statistics.put(key, map);
     }
-    Pair<Long, Long> entry = new Pair<>(System.nanoTime(), durationInNanos / 1000000);
+
+    Pair<Long, Long> entry = new Pair<>(System.currentTimeMillis(), TimeUnit.NANOSECONDS.toMillis(durationInNanos));
     LOGGER.trace("updating Statistics:" + key + ", value: " + entry);
     map.add(entry);
-
   }
 
   public void addChildTask(Future<Scenario> childTask) {
