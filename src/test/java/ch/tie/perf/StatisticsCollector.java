@@ -77,7 +77,7 @@ public class StatisticsCollector {
 
       List<String> lines = new ArrayList<String>();
       for (Pair<Long, Long> timeMeasurement : entry.getValue()) {
-        lines.add(timeMeasurement.getLeft() + ";" + timeMeasurement.getRight());
+        lines.add(categoryName + ";" + timeMeasurement.getLeft() + ";" + timeMeasurement.getRight());
       }
 
       try {
