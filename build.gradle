@@ -18,7 +18,7 @@ group = 'tie'
 
 task wrapper(type: Wrapper) {
 	description = 'Generates gradlew and gradlew.bat bootstrap scripts'
-	gradleVersion = '2.13'
+	gradleVersion = '3.0'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_7
