@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -22,60 +21,55 @@ import org.apache.logging.log4j.Logger;
 
 import ch.tie.perf.scenario.Pair;
 import ch.tie.perf.scenario.Scenario;
+import ch.tie.perf.scenario.Statistics;
 
 public class StatisticsCollector {
 
   private static final Logger LOGGER = LogManager.getLogger(StatisticsCollector.class);
   private final SimpleDateFormat filenamePrefixFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+  private final Statistics stats;
 
 
-  public void collectAndPrintStatistics(List<Future<Scenario>> tasks, String experiment) {
-    Map<String, List<Pair<Long, Long>>> mergedStats = new ConcurrentHashMap<String, List<Pair<Long, Long>>>();
+  public StatisticsCollector(Statistics stats) {
+    this.stats = stats;
+  }
 
+
+  public void waitForEndAndPrintStats(List<Future<Scenario>> tasks, String experiment) {
     Date now = new Date();
     String fileNamePrefix = filenamePrefixFormat.format(now) + "_" + experiment + "_";
 
+    waitForEndOfTasks(tasks);
+    printStatistics(fileNamePrefix);
+  }
+
+
+  private void waitForEndOfTasks(List<Future<Scenario>> tasks) {
     LinkedList<Future<Scenario>> queue = new LinkedList<>(tasks);
 
     while (!queue.isEmpty()) {
       Future<Scenario> task = queue.pollFirst();
       try {
         Scenario scenario = task.get();
-        Map<String, List<Pair<Long, Long>>> scenarioStats = scenario.getStatistics();
-        mergeMaps(mergedStats, scenarioStats);
         List<Future<Scenario>> spawnedTasks = scenario.getSpawnedTasks();
         queue.addAll(spawnedTasks);
       } catch (InterruptedException | ExecutionException e) {
         LOGGER.error("error while getting task result", e);
       }
     }
-    printStatistics(fileNamePrefix, mergedStats);
   }
 
 
-  private void mergeMaps(Map<String, List<Pair<Long, Long>>> toStatistics,
-      Map<String, List<Pair<Long, Long>>> fromStatistics) {
-    for (Map.Entry<String, List<Pair<Long, Long>>> category : fromStatistics.entrySet()) {
-      String categoryName = category.getKey();
-      List<Pair<Long, Long>> measurements = toStatistics.get(categoryName);
-      if (measurements == null) {
-        measurements = new ArrayList<Pair<Long, Long>>();
-        toStatistics.put(categoryName, measurements);
-      }
-      measurements.addAll(category.getValue());
-    }
-  }
+  private void printStatistics(String prefix) {
 
-  private void printStatistics(String prefix, Map<String, List<Pair<Long, Long>>> statistics) {
-
-    for (Map.Entry<String, List<Pair<Long, Long>>> entry : statistics.entrySet()) {
+    for (Map.Entry<String, List<Pair<Long, Long>>> entry : stats.entrySet()) {
 
       String categoryName = entry.getKey();
       LOGGER.info(categoryName + ": " + entry);
 
       sortEntries(entry.getValue());
 
-      List<String> lines = new ArrayList<String>();
+      List<String> lines = new ArrayList<>();
       for (Pair<Long, Long> timeMeasurement : entry.getValue()) {
         lines.add(categoryName + ";" + timeMeasurement.getLeft() + ";" + timeMeasurement.getRight());
       }

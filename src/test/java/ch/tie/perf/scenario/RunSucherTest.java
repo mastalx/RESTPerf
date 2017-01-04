@@ -22,18 +22,20 @@ public class RunSucherTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
+
+    Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(4);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
       Future<Scenario> future = scenarioRunner.run(runSucher);
 
-      StatisticsCollector statsHelper = new StatisticsCollector();
+      StatisticsCollector statsHelper = new StatisticsCollector(stats);
 
       String experimentName = "runsucher_";
       List<Future<Scenario>> futures = new ArrayList<>();
       futures.add(future);
-      statsHelper.collectAndPrintStatistics(futures, experimentName);
+      statsHelper.waitForEndAndPrintStats(futures, experimentName);
 
     }
   }

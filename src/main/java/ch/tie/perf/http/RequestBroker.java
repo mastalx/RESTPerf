@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.tie.perf.model.Obj;
+import ch.tie.perf.scenario.Statistics;
 
 
 public class RequestBroker implements Closeable {
@@ -42,29 +43,31 @@ public class RequestBroker implements Closeable {
   private final CloseableHttpClient restClient;
   private final String iengineUser;
   private final ObjectMapper objectMapper;
+  private final Statistics statistics;
 
   /**
    * Constructor.
    */
-  public RequestBroker(String iengineUser, String serviceUser, String servicePassword) {
+  public RequestBroker(String iengineUser, String serviceUser, String servicePassword, Statistics statistics) {
 
     this.iengineUser = iengineUser;
+    this.statistics = statistics;
     this.objectMapper = new ObjectMapper();
     this.restClient = createRestClient(serviceUser, servicePassword);
   }
 
-  public <T> T doGet(final String uri, final Class<T> resultClass) {
+  public <T> T doGet(final String uri, final Class<T> resultClass, String scenarioName) {
     final HttpGet getRequest = new HttpGet(uri);
-    return doRequest(getRequest, uri, resultClass);
+    return doRequest(getRequest, uri, resultClass, scenarioName);
   }
 
 
-  public <T> T doPut(final String uri, final Class<T> resultClass, final Obj body) {
+  public <T> T doPut(final String uri, final Class<T> resultClass, final Obj body, String scenarioName) {
     final HttpPut putRequest = new HttpPut(uri);
     if (body != null) {
       setBody(putRequest, body);
     }
-    return doRequest(putRequest, uri, resultClass);
+    return doRequest(putRequest, uri, resultClass, scenarioName);
   }
 
   private void setBody(final HttpEntityEnclosingRequestBase request, final Obj body) {
@@ -75,8 +78,12 @@ public class RequestBroker implements Closeable {
     }
   }
 
-  private <T> T doRequest(final HttpRequestBase request, final String uri, final Class<T> resultClass) {
+  private <T> T doRequest(final HttpRequestBase request,
+      final String uri,
+      final Class<T> resultClass,
+      String scenarioName) {
 
+    long start = System.nanoTime();
     // Do the rest service call
     request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(ACCEPT_HEADER, CONTENT_TYPE_VALUE);
@@ -94,13 +101,18 @@ public class RequestBroker implements Closeable {
 
 
       InputStream content = response.getEntity().getContent();
+      T retVal;
       if (byte[].class.equals(resultClass)) {
         @SuppressWarnings("unchecked")
         T byteArray = (T) IOUtils.toByteArray(content);
-        return byteArray;
+        retVal = byteArray;
+
       } else {
-        return objectMapper.readValue(content, resultClass);
+        retVal = objectMapper.readValue(content, resultClass);
       }
+      long durationGetBytes = System.nanoTime() - start;
+      statistics.updateStatistics(durationGetBytes, scenarioName);
+      return retVal;
     } catch (UnsupportedOperationException | IOException e) {
       throw new RuntimeException(e);
     }

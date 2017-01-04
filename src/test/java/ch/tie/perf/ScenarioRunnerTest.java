@@ -3,7 +3,6 @@ package ch.tie.perf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -12,9 +11,9 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.scenario.Pair;
 import ch.tie.perf.scenario.RunSucher;
 import ch.tie.perf.scenario.Scenario;
+import ch.tie.perf.scenario.Statistics;
 
 public class ScenarioRunnerTest {
 
@@ -32,12 +31,6 @@ public class ScenarioRunnerTest {
 
         @Override
         public Scenario call() throws Exception {
-          // TODO Auto-generated method stub
-          return null;
-        }
-
-        @Override
-        public Map<String, List<Pair<Long, Long>>> getStatistics() {
           // TODO Auto-generated method stub
           return null;
         }
@@ -62,8 +55,9 @@ public class ScenarioRunnerTest {
     String experimentName = "3x100_";
 
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 3; i++) {
@@ -72,8 +66,8 @@ public class ScenarioRunnerTest {
         taskList.add(task);
       }
 
-      StatisticsCollector statsHelper = new StatisticsCollector();
-      statsHelper.collectAndPrintStatistics(taskList, experimentName);
+      StatisticsCollector statsHelper = new StatisticsCollector(stats);
+      statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
     LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 
@@ -89,8 +83,9 @@ public class ScenarioRunnerTest {
     String pid = "3540616";
     String experimentName = "1x300_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 1; i++) {
@@ -99,8 +94,8 @@ public class ScenarioRunnerTest {
         taskList.add(task);
       }
 
-      StatisticsCollector statsHelper = new StatisticsCollector();
-      statsHelper.collectAndPrintStatistics(taskList, experimentName);
+      StatisticsCollector statsHelper = new StatisticsCollector(stats);
+      statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
     LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 
@@ -116,8 +111,9 @@ public class ScenarioRunnerTest {
     String pid = "3555973";
     String experimentName = "10x30";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword)) {
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 10; i++) {
@@ -126,8 +122,8 @@ public class ScenarioRunnerTest {
         taskList.add(task);
       }
 
-      StatisticsCollector statsHelper = new StatisticsCollector();
-      statsHelper.collectAndPrintStatistics(taskList, experimentName);
+      StatisticsCollector statsHelper = new StatisticsCollector(stats);
+      statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
     LOGGER.info("FINISHED EXPERIMENT" + experimentName);
 

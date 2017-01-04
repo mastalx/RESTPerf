@@ -13,7 +13,7 @@ import ch.tie.perf.http.RequestBroker;
 import ch.tie.perf.model.Obj;
 
 
-public class RunView extends StatisticsScenario {
+public class RunView extends AbstractScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunView.class);
 
@@ -35,7 +35,7 @@ public class RunView extends StatisticsScenario {
     try {
 
       Files.createDirectories(RunGetBytes.BINARIES_PATH);
-      Obj menu = getMenu();
+      Obj menu = rb.doGet(menuLink, Obj.class, "GET_DOCUMENT_MENU");
       String viewLink = menu.getLink("VIEW").getHref();
 
       LOGGER.debug("got view link:" + viewLink);
@@ -78,15 +78,6 @@ public class RunView extends StatisticsScenario {
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
     return viewLink;
-  }
-
-
-  private Obj getMenu() {
-    long start = System.nanoTime();
-    Obj menu = rb.doGet(menuLink, Obj.class);
-    long durationGetMenu = System.nanoTime() - start;
-    updateStatistics(durationGetMenu, "GET_DOCUMENT_MENU");
-    return menu;
   }
 
 }

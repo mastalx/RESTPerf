@@ -12,7 +12,7 @@ import ch.tie.perf.http.RequestBroker;
 import ch.tie.perf.model.Obj;
 
 
-public class RunSucher extends StatisticsScenario {
+public class RunSucher extends AbstractScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunSucher.class);
 
@@ -49,15 +49,12 @@ public class RunSucher extends StatisticsScenario {
   private Obj doSearch(RequestBroker rb, String suchenLink) {
 
     Obj body = new Obj();
-    Map<String, Object> attributes = new HashMap<String, Object>();
+    Map<String, Object> attributes = new HashMap<>();
     attributes.put("pid", pid);
     body.setAttributes(attributes);
     suchenLink = suchenLink + "?start=1&size=300";
 
-    long start = System.nanoTime();
-    Obj dokumentenliste = rb.doPut(suchenLink, Obj.class, body);
-    long durationSearch = System.nanoTime() - start;
-    updateStatistics(durationSearch, "PUT_FIND");
+    Obj dokumentenliste = rb.doPut(suchenLink, Obj.class, body, "PUT_FIND");
 
     LOGGER.debug("did search");
 
@@ -79,12 +76,8 @@ public class RunSucher extends StatisticsScenario {
 
 
   private String getSuchenLink(RequestBroker rb) {
-    long start = System.nanoTime();
-    Obj finder = rb.doGet(initialURI, Obj.class);
-    long durationGetFinder = System.nanoTime() - start;
 
-    updateStatistics(durationGetFinder, "GET_FINDER");
-
+    Obj finder = rb.doGet(initialURI, Obj.class, "GET_FINDER");
     finder = finder.getObjList().values().iterator().next();
 
     String suchenLink = finder.getLink("SUCHEN").getHref();

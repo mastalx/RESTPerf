@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 import ch.tie.perf.http.RequestBroker;
 
-public class RunGetBytes extends StatisticsScenario {
+public class RunGetBytes extends AbstractScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunGetBytes.class);
 
@@ -34,7 +34,7 @@ public class RunGetBytes extends StatisticsScenario {
   public Scenario call() throws Exception {
 
     LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
-    byte[] pdfBytes = getBytes(viewLink, category);
+    byte[] pdfBytes = rb.doGet(viewLink, byte[].class, category);
 
     int lastIndexOfSlash = viewLink.lastIndexOf("/");
     String fileName = viewLink.substring(lastIndexOfSlash + 1);
@@ -45,14 +45,5 @@ public class RunGetBytes extends StatisticsScenario {
     LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
 
     return this;
-  }
-
-
-  private byte[] getBytes(String viewLink, String key) {
-    long start = System.nanoTime();
-    byte[] bytes = rb.doGet(viewLink, byte[].class);
-    long durationGetBytes = System.nanoTime() - start;
-    updateStatistics(durationGetBytes, key);
-    return bytes;
   }
 }
