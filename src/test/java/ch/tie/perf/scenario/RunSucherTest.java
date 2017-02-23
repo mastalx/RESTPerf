@@ -12,7 +12,8 @@ import ch.tie.perf.http.RequestBroker;
 
 public class RunSucherTest {
 
-  private final static String KONS_REST2 = "http://10.5.69.18:7501";
+  private final static String KONS_REST2 = "http://10.5.68.215:7501";
+  private final static String CLIENT_IP = "10.5.69.18";
 
   @Test
   public void runSucherOnKons() throws Exception {
@@ -24,8 +25,8 @@ public class RunSucherTest {
     String pid = "3555973";
 
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(4);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
 
       Future<Scenario> future = scenarioRunner.run(runSucher);

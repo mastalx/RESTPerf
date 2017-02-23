@@ -39,21 +39,28 @@ public class RequestBroker implements Closeable {
   private static final String CONTENT_TYPE_VALUE = "application/json";
   private static final String ACCEPT_HEADER = "Accept";
   private static final String IENGINE_USER = "IENGINE_USER";
+  private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
   private final CloseableHttpClient restClient;
   private final String iengineUser;
   private final ObjectMapper objectMapper;
   private final Statistics statistics;
+  private final String clientIP;
 
   /**
    * Constructor.
    */
-  public RequestBroker(String iengineUser, String serviceUser, String servicePassword, Statistics statistics) {
+  public RequestBroker(String iengineUser,
+      String serviceUser,
+      String servicePassword,
+      Statistics statistics,
+      String clientIP) {
 
     this.iengineUser = iengineUser;
     this.statistics = statistics;
     this.objectMapper = new ObjectMapper();
     this.restClient = createRestClient(serviceUser, servicePassword);
+    this.clientIP = clientIP;
   }
 
   public <T> T doGet(final String uri, final Class<T> resultClass, String scenarioName) {
@@ -88,6 +95,7 @@ public class RequestBroker implements Closeable {
     request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(ACCEPT_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(IENGINE_USER, iengineUser);
+    request.addHeader(X_FORWARDED_FOR, clientIP);
     try (CloseableHttpResponse response = restClient.execute(request)) {
 
       // Check if an exception occurred on the server
@@ -128,7 +136,7 @@ public class RequestBroker implements Closeable {
 
     PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
     cm.setMaxTotal(400);
-    cm.setDefaultMaxPerRoute(40);
+    cm.setDefaultMaxPerRoute(100);
     return HttpClients.custom()
         .setDefaultCredentialsProvider(credentialsProvider)
         .setConnectionManager(cm)

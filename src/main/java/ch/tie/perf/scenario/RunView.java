@@ -41,7 +41,22 @@ public class RunView extends AbstractScenario {
       LOGGER.debug("got view link:" + viewLink);
 
       getPDF(viewLink);
+      getPDF(viewLink);
+      getPDF(viewLink);
+      getPDF(viewLink);
+
+      String streamLink = menu.getLink("STREAM").getHref();
+      getPDFStreamed(streamLink);
+      getPDFStreamed(streamLink);
+      getPDFStreamed(streamLink);
+      getPDFStreamed(streamLink);
       getOldThumnbail(viewLink);
+      getOldThumnbail(viewLink);
+      getOldThumnbail(viewLink);
+      getOldThumnbail(viewLink);
+      getNewThumbnail(menu);
+      getNewThumbnail(menu);
+      getNewThumbnail(menu);
       getNewThumbnail(menu);
 
 
@@ -73,8 +88,16 @@ public class RunView extends AbstractScenario {
     addChildTask(viewThumbnailFuture);
   }
 
+
   private String getPDF(String viewLink) throws IOException {
     RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", ".pdf", rb);
+    Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
+    addChildTask(viewPdfFuture);
+    return viewLink;
+  }
+
+  private String getPDFStreamed(String viewLink) throws IOException {
+    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF_STREAMED", ".pdf", rb);
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
     return viewLink;

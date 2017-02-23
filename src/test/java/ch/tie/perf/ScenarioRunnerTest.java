@@ -20,7 +20,8 @@ public class ScenarioRunnerTest {
 
   private static final Logger LOGGER = LogManager.getLogger(ScenarioRunnerTest.class);
 
-  private final static String KONS_REST2 = "http://10.5.69.18:7501";
+  private final static String KONS_REST2 = "http://10.5.68.215:7501";
+  private final static String CLIENT_IP = "10.244.64.94";
 
   @Test
   public void runFirstScenario() throws IOException {
@@ -56,8 +57,8 @@ public class ScenarioRunnerTest {
 
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 3; i++) {
@@ -84,8 +85,8 @@ public class ScenarioRunnerTest {
     String experimentName = "1x300_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 1; i++) {
@@ -112,8 +113,8 @@ public class ScenarioRunnerTest {
     String experimentName = "10x30";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(10);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats)) {
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 10; i++) {

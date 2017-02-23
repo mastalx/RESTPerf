@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class StatisticsCollector {
 
 
   private void waitForEndOfTasks(List<Future<Scenario>> tasks) {
-    LinkedList<Future<Scenario>> queue = new LinkedList<>(tasks);
+    Deque<Future<Scenario>> queue = new LinkedList<>(tasks);
 
     while (!queue.isEmpty()) {
       Future<Scenario> task = queue.pollFirst();
@@ -90,6 +91,12 @@ public class StatisticsCollector {
 
       @Override
       public int compare(Pair<Long, Long> o1, Pair<Long, Long> o2) {
+        if (o1 == null) {
+          return -1;
+        }
+        if (o2 == null) {
+          return 1;
+        }
         return Long.compare(o1.getLeft(), o2.getLeft());
       }
     };
