@@ -36,6 +36,9 @@ public class RunView extends AbstractScenario {
 
       Files.createDirectories(RunGetBytes.BINARIES_PATH);
       Obj menu = rb.doGet(menuLink, Obj.class, "GET_DOCUMENT_MENU");
+      if (menu == null) {
+        return this;
+      }
       String viewLink = menu.getLink("VIEW").getHref();
 
       LOGGER.debug("got view link:" + viewLink);
