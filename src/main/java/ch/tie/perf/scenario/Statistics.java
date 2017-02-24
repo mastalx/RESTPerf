@@ -14,13 +14,7 @@ public class Statistics extends ConcurrentHashMap<String, List<Pair<Long, Long>>
   private static final Logger LOGGER = LogManager.getLogger(AbstractScenario.class);
 
   public void updateStatistics(long durationInNanos, String key) {
-
-    List<Pair<Long, Long>> map = get(key);
-    if (map == null) {
-      map = new ArrayList<>();
-      put(key, map);
-    }
-
+    List<Pair<Long, Long>> map = this.computeIfAbsent(key, (k) -> new ArrayList<>());
     Pair<Long, Long> entry = new Pair<>(System.currentTimeMillis(), TimeUnit.NANOSECONDS.toMillis(durationInNanos));
     LOGGER.trace("updating Statistics:" + key + ", value: " + entry);
     map.add(entry);

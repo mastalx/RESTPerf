@@ -3,8 +3,12 @@ package ch.tie.perf.http;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,6 +31,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.tie.perf.model.Obj;
+import ch.tie.perf.scenario.FileHolder;
 import ch.tie.perf.scenario.Statistics;
 
 
@@ -85,6 +90,7 @@ public class RequestBroker implements Closeable {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private <T> T doRequest(final HttpRequestBase request,
       final String uri,
       final Class<T> resultClass,
@@ -107,28 +113,46 @@ public class RequestBroker implements Closeable {
       }
       // Map the content to the requested result class
 
+      try (InputStream content = response.getEntity().getContent()) {
+        T retVal;
+        if (FileHolder.class.equals(resultClass)) {
+          byte[] byteArray = IOUtils.toByteArray(content);
+          String fileName = getFileName(response);
+          retVal = (T) new FileHolder(fileName, byteArray);
 
-      InputStream content = response.getEntity().getContent();
-      T retVal;
-      if (byte[].class.equals(resultClass)) {
-        @SuppressWarnings("unchecked")
-        T byteArray = (T) IOUtils.toByteArray(content);
-        retVal = byteArray;
-
-      } else {
-        retVal = objectMapper.readValue(content, resultClass);
+        } else {
+          retVal = objectMapper.readValue(content, resultClass);
+        }
+        long durationGetBytes = System.nanoTime() - start;
+        statistics.updateStatistics(durationGetBytes, scenarioName);
+        return retVal;
       }
-      long durationGetBytes = System.nanoTime() - start;
-      statistics.updateStatistics(durationGetBytes, scenarioName);
-      return retVal;
     } catch (UnsupportedOperationException | IOException e) {
       throw new RuntimeException(e);
     }
   }
 
+  private String getFileName(CloseableHttpResponse response) {
+    String retVal = UUID.randomUUID().toString();
+    Header[] contentDispo = response.getHeaders("Content-Disposition");
+    if (contentDispo != null && contentDispo.length > 0) {
+      HeaderElement[] elements = contentDispo[0].getElements();
+      if (elements != null && elements.length > 0) {
+        for (HeaderElement headerElement : elements) {
+          NameValuePair fileNamePair = headerElement.getParameterByName("filename");
+          if (fileNamePair != null) {
+            String fileName = fileNamePair.getValue();
+            String name = fileName.substring(0, fileName.lastIndexOf('.'));
+            String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+            retVal = name + retVal + "." + extension;
+          }
+        }
+      }
+    }
+    return retVal;
+  }
+
   private CloseableHttpClient createRestClient(String username, String password) {
-
-
     LOGGER.info("Connect to health engine rest using user '" + username + "'");
 
     final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -142,14 +166,11 @@ public class RequestBroker implements Closeable {
         .setConnectionManager(cm)
         .setConnectionManagerShared(true)
         .build();
-
   }
 
   @Override
   public void close() throws IOException {
-    if (restClient != null) {
-      restClient.close();
+    try (CloseableHttpClient restClient = this.restClient) {
     }
-
   }
 }
