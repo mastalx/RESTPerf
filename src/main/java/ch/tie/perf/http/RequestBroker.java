@@ -3,6 +3,7 @@ package ch.tie.perf.http;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
@@ -84,7 +85,7 @@ public class RequestBroker implements Closeable {
 
   private void setBody(final HttpEntityEnclosingRequestBase request, final Obj body) {
     try {
-      request.setEntity(new StringEntity(objectMapper.writeValueAsString(body), ENCODING));
+      request.setEntity(new StringEntity(objectMapper.writeValueAsString(body), StandardCharsets.UTF_8));
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
@@ -107,7 +108,7 @@ public class RequestBroker implements Closeable {
       // Check if an exception occurred on the server
       final StatusLine statusLine = response.getStatusLine();
       if (statusLine.getStatusCode() == 500) {
-        final String responseContent = EntityUtils.toString(response.getEntity(), ENCODING);
+        final String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
         throw new RuntimeException(
             "error 500 occured request:" + request + System.lineSeparator() + " response: " + responseContent);
       }
