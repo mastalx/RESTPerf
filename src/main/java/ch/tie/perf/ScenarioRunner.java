@@ -18,9 +18,9 @@ public class ScenarioRunner implements Closeable {
   private static final Logger LOGGER = LogManager.getLogger(ScenarioRunner.class);
   private final ExecutorService executorService;
 
-  public ScenarioRunner(int concurrency) {
-    LOGGER.info("startup Performance test with concurrency: " + concurrency);
-    executorService = Executors.newFixedThreadPool(concurrency);
+  public ScenarioRunner(int parallelism) {
+    LOGGER.info("startup Performance test with parallelism: " + parallelism);
+    executorService = Executors.newFixedThreadPool(parallelism);
   }
 
 

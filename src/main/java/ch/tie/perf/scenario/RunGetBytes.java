@@ -1,5 +1,6 @@
 package ch.tie.perf.scenario;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +15,15 @@ public class RunGetBytes extends AbstractScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunGetBytes.class);
 
-  public static final Path BINARIES_PATH = Paths.get("binaries");
+  private static final Path BINARIES_PATH = Paths.get("binaries");
+
+  static {
+    try {
+      Files.createDirectories(RunGetBytes.BINARIES_PATH);
+    } catch (IOException e) {
+      LOGGER.error("could not create binaries folder: " + BINARIES_PATH, e);
+    }
+  }
   private final String viewLink;
   private final String category;
 
@@ -29,16 +38,18 @@ public class RunGetBytes extends AbstractScenario {
 
   @Override
   public Scenario call() throws Exception {
+    try {
+      LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
+      FileHolder file = rb.doGet(viewLink, FileHolder.class, category);
 
-    LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
-    FileHolder file = rb.doGet(viewLink, FileHolder.class, category);
 
+      Path temppdf = Paths.get(BINARIES_PATH.toString(), file.getFileName());
+      Files.write(temppdf, file.getBytes(), StandardOpenOption.CREATE);
 
-    Path temppdf = Paths.get(BINARIES_PATH.toString(), file.getFileName());
-    Files.write(temppdf, file.getBytes(), StandardOpenOption.CREATE);
-
-    LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
-
+      LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
+    } catch (Exception e) {
+      LOGGER.error("error in getting bytes", e);
+    }
     return this;
   }
 }

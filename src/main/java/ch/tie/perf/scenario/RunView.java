@@ -33,8 +33,6 @@ public class RunView extends AbstractScenario {
   @Override
   public RunView call() throws Exception {
     try {
-
-      Files.createDirectories(RunGetBytes.BINARIES_PATH);
       Obj menu = rb.doGet(menuLink, Obj.class, "GET_DOCUMENT_MENU");
       if (menu == null) {
         return this;

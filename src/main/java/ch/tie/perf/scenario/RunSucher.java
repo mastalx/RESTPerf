@@ -2,7 +2,6 @@ package ch.tie.perf.scenario;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -72,7 +71,6 @@ public class RunSucher extends AbstractScenario {
         .map(searchItem -> searchItem.getLink("object").getHref())
         .map(menuLink -> new RunView(menuLink, rb, scenarioRunner))
         .map(runView -> scenarioRunner.run(runView))
-        .collect(Collectors.toList())
         .forEach(this::addChildTask);
   }
 
