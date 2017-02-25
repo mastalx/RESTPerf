@@ -4,12 +4,10 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -38,7 +36,6 @@ import ch.tie.perf.scenario.Statistics;
 
 public class RequestBroker implements Closeable {
 
-  private static final String ENCODING = "UTF-8";
   public static final Logger LOGGER = LogManager.getLogger(RequestBroker.class);
 
   private static final String CONTENT_TYPE_HEADER = "Content-Type";
@@ -134,27 +131,18 @@ public class RequestBroker implements Closeable {
   }
 
   private String getFileName(CloseableHttpResponse response, String scenarioName) {
-    String retVal = UUID.randomUUID().toString();
-    Header[] contentDispo = response.getHeaders("Content-Disposition");
-    if (contentDispo != null) {
-      for (Header header : contentDispo) {
-        HeaderElement[] elements = header.getElements();
-        if (elements != null) {
-          for (HeaderElement headerElement : elements) {
-            if (headerElement != null) {
-              NameValuePair fileNamePair = headerElement.getParameterByName("filename");
-              if (fileNamePair != null) {
-                String fileName = fileNamePair.getValue();
-                String name = fileName.substring(0, fileName.lastIndexOf('.'));
-                String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
-                return scenarioName + name + retVal + "." + extension;
-              }
-            }
-          }
-        }
-      }
-    }
-    return scenarioName + retVal;
+    return Arrays.asList(response.getHeaders("Content-Disposition"))
+        .stream()
+        .flatMap(header -> Arrays.asList(header.getElements()).stream())
+        .filter(headerElement -> headerElement.getParameterByName("filename") != null)
+        .map(headerElement -> {
+          String fileName = headerElement.getParameterByName("filename").getValue();
+          String name = fileName.substring(0, fileName.lastIndexOf('.'));
+          String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+          return scenarioName + name + UUID.randomUUID().toString() + "." + extension;
+        })
+        .findFirst()
+        .orElse(scenarioName + UUID.randomUUID().toString());
   }
 
   private CloseableHttpClient createRestClient(String username, String password) {
