@@ -131,14 +131,15 @@ public class RequestBroker implements Closeable {
   }
 
   private String getFileName(CloseableHttpResponse response, String scenarioName) {
-    return Arrays.asList(response.getHeaders("Content-Disposition"))
-        .stream()
-        .flatMap(header -> Arrays.asList(header.getElements()).stream())
-        .filter(headerElement -> headerElement.getParameterByName("filename") != null)
-        .map(headerElement -> {
-          String fileName = headerElement.getParameterByName("filename").getValue();
-          String name = fileName.substring(0, fileName.lastIndexOf('.'));
-          String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+    return Arrays.stream(response.getHeaders("Content-Disposition"))
+        .flatMap(header -> Arrays.stream(header.getElements()))
+        .map(headerElement -> headerElement.getParameterByName("fileName"))
+        .filter(fileNamePair -> fileNamePair != null)
+        .map(fileNamePair -> fileNamePair.getValue())
+        .map(fileName -> {
+          int indexOfFullStop = fileName.lastIndexOf('.');
+          String name = fileName.substring(0, indexOfFullStop);
+          String extension = fileName.substring(indexOfFullStop + 1, fileName.length());
           return scenarioName + name + UUID.randomUUID().toString() + "." + extension;
         })
         .findFirst()
