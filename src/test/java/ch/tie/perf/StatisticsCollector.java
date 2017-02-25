@@ -65,8 +65,6 @@ public class StatisticsCollector {
           .map(
               measurement -> measurement.getName() + ";" + measurement.getTimestamp() + ";" + measurement.getDuration())
           .collect(Collectors.toList());
-
-
       try {
         Files.write(Paths.get(prefix + name + ".csv"), lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
             StandardOpenOption.CREATE);
