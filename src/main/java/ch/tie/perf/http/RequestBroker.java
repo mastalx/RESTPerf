@@ -117,7 +117,7 @@ public class RequestBroker implements Closeable {
         T retVal;
         if (FileHolder.class.equals(resultClass)) {
           byte[] byteArray = IOUtils.toByteArray(content);
-          String fileName = getFileName(response);
+          String fileName = getFileName(response, scenarioName);
           retVal = (T) new FileHolder(fileName, byteArray);
 
         } else {
@@ -132,24 +132,28 @@ public class RequestBroker implements Closeable {
     }
   }
 
-  private String getFileName(CloseableHttpResponse response) {
+  private String getFileName(CloseableHttpResponse response, String scenarioName) {
     String retVal = UUID.randomUUID().toString();
     Header[] contentDispo = response.getHeaders("Content-Disposition");
-    if ((contentDispo != null) && (contentDispo.length > 0)) {
-      HeaderElement[] elements = contentDispo[0].getElements();
-      if ((elements != null) && (elements.length > 0)) {
-        for (HeaderElement headerElement : elements) {
-          NameValuePair fileNamePair = headerElement.getParameterByName("filename");
-          if (fileNamePair != null) {
-            String fileName = fileNamePair.getValue();
-            String name = fileName.substring(0, fileName.lastIndexOf('.'));
-            String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
-            retVal = name + retVal + "." + extension;
+    if (contentDispo != null) {
+      for (Header header : contentDispo) {
+        HeaderElement[] elements = header.getElements();
+        if (elements != null) {
+          for (HeaderElement headerElement : elements) {
+            if (headerElement != null) {
+              NameValuePair fileNamePair = headerElement.getParameterByName("filename");
+              if (fileNamePair != null) {
+                String fileName = fileNamePair.getValue();
+                String name = fileName.substring(0, fileName.lastIndexOf('.'));
+                String extension = fileName.substring(fileName.lastIndexOf('.') + 1, fileName.length());
+                return scenarioName + name + retVal + "." + extension;
+              }
+            }
           }
         }
       }
     }
-    return retVal;
+    return scenarioName + retVal;
   }
 
   private CloseableHttpClient createRestClient(String username, String password) {
