@@ -2,7 +2,7 @@ package ch.tie.perf.scenario;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,9 +38,6 @@ public class RunSucher extends AbstractScenario {
       Obj dokumentenliste = doSearch(requestBroker, suchenLink);
 
       getThumnbailsAndPDFs(requestBroker, dokumentenliste);
-      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
-      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
-      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
     } catch (Exception e) {
       LOGGER.error("error in sucher", e);
     }
@@ -55,7 +52,7 @@ public class RunSucher extends AbstractScenario {
     Map<String, Object> attributes = new HashMap<>();
     attributes.put("pid", pid);
     body.setAttributes(attributes);
-    suchenLink = suchenLink + "?start=1&size=300";
+    suchenLink = suchenLink + "?start=1&size=3000";
 
     Obj dokumentenliste = rb.doPut(suchenLink, Obj.class, body, "PUT_FIND");
 
@@ -69,12 +66,14 @@ public class RunSucher extends AbstractScenario {
 
     LOGGER.debug("start getting  individual thumbnails and pdfs");
 
-    for (Obj searchItem : dokumentenliste.getObjList().values()) {
-      String menuLink = searchItem.getLink("object").getHref();
-      RunView view = new RunView(menuLink, rb, scenarioRunner);
-      Future<Scenario> startedCall = scenarioRunner.run(view);
-      addChildTask(startedCall);
-    }
+    dokumentenliste.getObjList()
+        .values()
+        .parallelStream()
+        .map(searchItem -> searchItem.getLink("object").getHref())
+        .map(menuLink -> new RunView(menuLink, rb, scenarioRunner))
+        .map(runView -> scenarioRunner.run(runView))
+        .collect(Collectors.toList())
+        .forEach(this::addChildTask);
   }
 
 
