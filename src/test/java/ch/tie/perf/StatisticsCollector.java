@@ -6,21 +6,17 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.tie.perf.scenario.Pair;
 import ch.tie.perf.scenario.Scenario;
 import ch.tie.perf.scenario.Statistics;
 
@@ -63,44 +59,20 @@ public class StatisticsCollector {
 
   private void printStatistics(String prefix) {
 
-    for (Map.Entry<String, List<Pair<Long, Long>>> entry : stats.entrySet()) {
+    stats.forEach((name, measurements) -> {
+      List<String> lines = measurements.stream()
+          .sorted()
+          .map(
+              measurement -> measurement.getName() + ";" + measurement.getTimestamp() + ";" + measurement.getDuration())
+          .collect(Collectors.toList());
 
-      String categoryName = entry.getKey();
-      LOGGER.info(categoryName + ": " + entry);
-
-      sortEntries(entry.getValue());
-
-      List<String> lines = new ArrayList<>();
-      for (Pair<Long, Long> timeMeasurement : entry.getValue()) {
-        lines.add(categoryName + ";" + timeMeasurement.getLeft() + ";" + timeMeasurement.getRight());
-      }
 
       try {
-        Files.write(Paths.get(prefix + categoryName + ".csv"), lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
+        Files.write(Paths.get(prefix + name + ".csv"), lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
             StandardOpenOption.CREATE);
       } catch (IOException ioe) {
         LOGGER.error("cannot write statistics: ", ioe);
       }
-    }
+    });
   }
-
-
-  private void sortEntries(List<Pair<Long, Long>> categoryStats) {
-
-    Comparator<Pair<Long, Long>> longComparator = new Comparator<Pair<Long, Long>>() {
-
-      @Override
-      public int compare(Pair<Long, Long> o1, Pair<Long, Long> o2) {
-        if (o1 == null) {
-          return -1;
-        }
-        if (o2 == null) {
-          return 1;
-        }
-        return Long.compare(o1.getLeft(), o2.getLeft());
-      }
-    };
-    Collections.sort(categoryStats, longComparator);
-  }
-
 }
