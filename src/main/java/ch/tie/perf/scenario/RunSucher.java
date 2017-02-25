@@ -38,6 +38,9 @@ public class RunSucher extends AbstractScenario {
       Obj dokumentenliste = doSearch(requestBroker, suchenLink);
 
       getThumnbailsAndPDFs(requestBroker, dokumentenliste);
+      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
+      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
+      getThumnbailsAndPDFs(requestBroker, dokumentenliste);
     } catch (Exception e) {
       LOGGER.error("error in sucher", e);
     }

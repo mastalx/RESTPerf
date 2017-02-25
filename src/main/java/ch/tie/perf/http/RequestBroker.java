@@ -123,8 +123,8 @@ public class RequestBroker implements Closeable {
         } else {
           retVal = objectMapper.readValue(content, resultClass);
         }
-        long durationGetBytes = System.nanoTime() - start;
-        statistics.updateStatistics(durationGetBytes, scenarioName);
+        long end = System.nanoTime();
+        statistics.updateStatistics(scenarioName, end - start);
         return retVal;
       }
     } catch (UnsupportedOperationException | IOException e) {
@@ -135,9 +135,9 @@ public class RequestBroker implements Closeable {
   private String getFileName(CloseableHttpResponse response) {
     String retVal = UUID.randomUUID().toString();
     Header[] contentDispo = response.getHeaders("Content-Disposition");
-    if (contentDispo != null && contentDispo.length > 0) {
+    if ((contentDispo != null) && (contentDispo.length > 0)) {
       HeaderElement[] elements = contentDispo[0].getElements();
-      if (elements != null && elements.length > 0) {
+      if ((elements != null) && (elements.length > 0)) {
         for (HeaderElement headerElement : elements) {
           NameValuePair fileNamePair = headerElement.getParameterByName("filename");
           if (fileNamePair != null) {

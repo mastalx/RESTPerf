@@ -1,8 +1,11 @@
 package ch.tie.perf;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import ch.tie.perf.scenario.Measurement;
 import ch.tie.perf.scenario.Scenario;
 import ch.tie.perf.scenario.Statistics;
 
@@ -58,19 +62,21 @@ public class StatisticsCollector {
 
 
   private void printStatistics(String prefix) {
-
-    stats.forEach((name, measurements) -> {
-      List<String> lines = measurements.stream()
-          .sorted()
-          .map(
-              measurement -> measurement.getName() + ";" + measurement.getTimestamp() + ";" + measurement.getDuration())
-          .collect(Collectors.toList());
-      try {
-        Files.write(Paths.get(prefix + name + ".csv"), lines, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
-            StandardOpenOption.CREATE);
-      } catch (IOException ioe) {
-        LOGGER.error("cannot write statistics: ", ioe);
-      }
-    });
+    stats.getMeasurements()
+        .stream()
+        .collect(Collectors.groupingBy(Measurement::getName))
+        .forEach((name, measurements) -> {
+          Path path = Paths.get(prefix + name + ".csv");
+          try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8, StandardOpenOption.APPEND,
+              StandardOpenOption.CREATE); PrintWriter pw = new PrintWriter(writer)) {
+            measurements.stream()
+                .sorted()
+                .map(measurement -> measurement.getName() + ";" + measurement.getTimestamp() + ";"
+                    + measurement.getDuration())
+                .forEach(pw::println);
+          } catch (IOException ioe) {
+            LOGGER.error("cannot write statistics: ", ioe);
+          }
+        });
   }
 }

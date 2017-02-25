@@ -44,22 +44,10 @@ public class RunView extends AbstractScenario {
       LOGGER.debug("got view link:" + viewLink);
 
       getPDF(viewLink);
-      getPDF(viewLink);
-      getPDF(viewLink);
-      getPDF(viewLink);
 
       String streamLink = menu.getLink("STREAM").getHref();
       getPDFStreamed(streamLink);
-      getPDFStreamed(streamLink);
-      getPDFStreamed(streamLink);
-      getPDFStreamed(streamLink);
       getOldThumnbail(viewLink);
-      getOldThumnbail(viewLink);
-      getOldThumnbail(viewLink);
-      getOldThumnbail(viewLink);
-      getNewThumbnail(menu);
-      getNewThumbnail(menu);
-      getNewThumbnail(menu);
       getNewThumbnail(menu);
 
 

@@ -61,6 +61,7 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
+
       for (int i = 0; i < 3; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
         Future<Scenario> task = scenarioRunner.run(runSucher);
