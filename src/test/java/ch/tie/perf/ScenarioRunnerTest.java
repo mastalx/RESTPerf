@@ -24,6 +24,8 @@ public class ScenarioRunnerTest {
 
   private static final boolean SAVE_FILE = false;
 
+  private static final int MULTIPLIER = 1;
+
   @Test
   public void runFirstScenario() throws IOException {
 
@@ -63,7 +65,7 @@ public class ScenarioRunnerTest {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
 
-      for (int i = 0; i < 3; i++) {
+      for (int i = 0; i < 3 * MULTIPLIER; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
@@ -91,7 +93,7 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 1; i++) {
+      for (int i = 0; i < 1 * MULTIPLIER; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
@@ -119,7 +121,7 @@ public class ScenarioRunnerTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 10 * MULTIPLIER; i++) {
         RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
