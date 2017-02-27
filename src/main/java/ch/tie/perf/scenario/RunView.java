@@ -34,10 +34,11 @@ public class RunView extends AbstractScenario {
   public RunView call() throws Exception {
     try {
       Obj menu = rb.doGet(menuLink, Obj.class, "GET_DOCUMENT_MENU");
-      if (menu == null) {
+      Link link;
+      if (menu == null || (link = menu.getLink("VIEW")) == null) {
         return this;
       }
-      String viewLink = menu.getLink("VIEW").getHref();
+      String viewLink = link.getHref();
 
       LOGGER.debug("got view link:" + viewLink);
 
