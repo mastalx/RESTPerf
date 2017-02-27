@@ -42,7 +42,7 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
 	// http://mvnrepository.com/artifact/org.springframework.hateoas/spring-hateoas
-	compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.20.0.RELEASE'
+	compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
 
 	  
 

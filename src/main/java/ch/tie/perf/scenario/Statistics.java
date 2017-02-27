@@ -10,11 +10,11 @@ public class Statistics {
   private final List<Measurement> measurements = Collections.synchronizedList(new ArrayList<>());
 
   public void updateStatistics(String name, long duration) {
-    measurements.add(new Measurement(name, System.currentTimeMillis(), TimeUnit.NANOSECONDS.toMillis(duration)));
+    Measurement measurement = new Measurement(name, System.currentTimeMillis(), TimeUnit.NANOSECONDS.toMillis(duration));
+    measurements.add(measurement);
   }
 
   public List<Measurement> getMeasurements() {
     return measurements;
   }
-
 }

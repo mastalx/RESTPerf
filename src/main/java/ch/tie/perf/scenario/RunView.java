@@ -1,7 +1,6 @@
 package ch.tie.perf.scenario;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,7 +16,6 @@ public class RunView extends AbstractScenario {
 
   private static final Logger LOGGER = LogManager.getLogger(RunView.class);
 
-
   private final RequestBroker rb;
   private final String menuLink;
   private final ScenarioRunner scenarioRunner;
@@ -27,7 +25,6 @@ public class RunView extends AbstractScenario {
     this.menuLink = menuLink;
     this.rb = rb;
     this.scenarioRunner = scenarioRunner;
-
   }
 
   @Override
