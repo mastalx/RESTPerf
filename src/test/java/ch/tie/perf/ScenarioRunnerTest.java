@@ -23,6 +23,8 @@ public class ScenarioRunnerTest {
   private final static String KONS_REST2 = "http://10.5.68.215:7501";
   private final static String CLIENT_IP = "10.244.64.94";
 
+  private static final boolean SAVE_FILE = false;
+
   @Test
   public void runFirstScenario() throws IOException {
 
@@ -63,7 +65,7 @@ public class ScenarioRunnerTest {
       List<Future<Scenario>> taskList = new ArrayList<>();
 
       for (int i = 0; i < 3; i++) {
-        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
@@ -91,7 +93,7 @@ public class ScenarioRunnerTest {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 1; i++) {
-        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }
@@ -119,7 +121,7 @@ public class ScenarioRunnerTest {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
       for (int i = 0; i < 10; i++) {
-        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
+        RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, SAVE_FILE);
         Future<Scenario> task = scenarioRunner.run(runSucher);
         taskList.add(task);
       }

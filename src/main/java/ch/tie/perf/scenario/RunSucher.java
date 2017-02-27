@@ -20,11 +20,18 @@ public class RunSucher extends AbstractScenario {
   private final String pid;
   private final RequestBroker requestBroker;
 
-  public RunSucher(ScenarioRunner scenarioRunner, String initialURI, String pid, RequestBroker requestBroker) {
+  private final boolean saveFile;
+
+  public RunSucher(ScenarioRunner scenarioRunner,
+      String initialURI,
+      String pid,
+      RequestBroker requestBroker,
+      boolean saveFile) {
     this.scenarioRunner = scenarioRunner;
     this.initialURI = initialURI;
     this.pid = pid;
     this.requestBroker = requestBroker;
+    this.saveFile = saveFile;
   }
 
 
@@ -69,7 +76,7 @@ public class RunSucher extends AbstractScenario {
         .values()
         .parallelStream()
         .map(searchItem -> searchItem.getLink("object").getHref())
-        .map(menuLink -> new RunView(menuLink, rb, scenarioRunner))
+        .map(menuLink -> new RunView(menuLink, rb, scenarioRunner, saveFile))
         .map(runView -> scenarioRunner.run(runView))
         .forEach(this::addChildTask);
   }

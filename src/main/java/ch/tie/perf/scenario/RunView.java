@@ -20,11 +20,14 @@ public class RunView extends AbstractScenario {
   private final String menuLink;
   private final ScenarioRunner scenarioRunner;
 
+  private final boolean saveFile;
 
-  public RunView(String menuLink, RequestBroker rb, ScenarioRunner scenarioRunner) {
+
+  public RunView(String menuLink, RequestBroker rb, ScenarioRunner scenarioRunner, boolean saveFile) {
     this.menuLink = menuLink;
     this.rb = rb;
     this.scenarioRunner = scenarioRunner;
+    this.saveFile = saveFile;
   }
 
   @Override
@@ -59,7 +62,7 @@ public class RunView extends AbstractScenario {
       String thumbnailLink = newThumbnailLink.getHref();
       thumbnailLink = thumbnailLink + "?imageType=THUMBNAIL_M";
       LOGGER.debug("got thumbnail link without protocol:" + thumbnailLink);
-      RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL_NO_PROTOCOL", rb);
+      RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL_NO_PROTOCOL", rb, saveFile);
       Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
       addChildTask(viewThumbnailFuture);
     }
@@ -69,21 +72,21 @@ public class RunView extends AbstractScenario {
   private void getOldThumnbail(String viewLink) {
     String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
     LOGGER.debug("got thumbnail link with protocol:" + thumbnailLink);
-    RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", rb);
+    RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", rb, saveFile);
     Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
     addChildTask(viewThumbnailFuture);
   }
 
 
   private String getPDF(String viewLink) throws IOException {
-    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", rb);
+    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", rb, saveFile);
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
     return viewLink;
   }
 
   private String getPDFStreamed(String viewLink) throws IOException {
-    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF_STREAMED", rb);
+    RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF_STREAMED", rb, saveFile);
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
     return viewLink;

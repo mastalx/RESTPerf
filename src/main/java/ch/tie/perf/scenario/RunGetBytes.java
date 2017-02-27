@@ -26,14 +26,15 @@ public class RunGetBytes extends AbstractScenario {
   }
   private final String viewLink;
   private final String category;
-
   private final RequestBroker rb;
+  private final boolean saveFile;
 
 
-  public RunGetBytes(String viewLink, String category, RequestBroker requestBroker) {
+  public RunGetBytes(String viewLink, String category, RequestBroker requestBroker, boolean saveFile) {
     this.viewLink = viewLink;
     this.category = category;
     this.rb = requestBroker;
+    this.saveFile = saveFile;
   }
 
   @Override
@@ -42,9 +43,10 @@ public class RunGetBytes extends AbstractScenario {
       LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
       FileHolder file = rb.doGet(viewLink, FileHolder.class, category);
 
-
-      Path temppdf = Paths.get(BINARIES_PATH.toString(), file.getFileName());
-      Files.write(temppdf, file.getBytes(), StandardOpenOption.CREATE);
+      if (saveFile) {
+        Path temppdf = Paths.get(BINARIES_PATH.toString(), file.getFileName());
+        Files.write(temppdf, file.getBytes(), StandardOpenOption.CREATE);
+      }
 
       LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
     } catch (Exception e) {
