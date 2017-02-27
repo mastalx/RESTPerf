@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.StatusLine;
@@ -51,7 +51,7 @@ public class RequestBroker implements Closeable {
   private final Statistics statistics;
   private final String clientIP;
 
-  private final AtomicInteger corrIdCounter = new AtomicInteger(0);
+  private final AtomicLong corrIdCounter = new AtomicLong(0);
 
   /**
    * Constructor.
@@ -97,7 +97,7 @@ public class RequestBroker implements Closeable {
       final Class<T> resultClass,
       String scenarioName) {
 
-    String nextId = Integer.toString(corrIdCounter.getAndIncrement());
+    long requestId = corrIdCounter.getAndIncrement();
     long start = System.nanoTime();
     // Do the rest service call
     request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE);
@@ -105,18 +105,18 @@ public class RequestBroker implements Closeable {
     request.addHeader(IENGINE_USER, iengineUser);
     request.addHeader(X_FORWARDED_FOR, clientIP);
 
-    LOGGER.debug("sending Request with Id: " + nextId);
+    LOGGER.debug("sending Request with Id: " + requestId);
     try (CloseableHttpResponse response = restClient.execute(request)) {
 
       // Check if an exception occurred on the server
       final StatusLine statusLine = response.getStatusLine();
 
-      LOGGER.debug("got response with Id: " + nextId + ", Response Status: " + statusLine);
+      LOGGER.debug("got response with Id: " + requestId + ", Response Status: " + statusLine);
       int responseStatus = statusLine.getStatusCode();
       if (responseStatus != 200) {
         final String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        throw new RuntimeException("response with Id: " + nextId + ", error " + responseStatus
-            + " occured request:" + request + System.lineSeparator() + " response: " + responseContent);
+        throw new RuntimeException("response with Id: " + requestId + ", error " + responseStatus + " occured request:"
+            + request + System.lineSeparator() + " response: " + responseContent);
       }
       // Map the content to the requested result class
       try (InputStream content = response.getEntity().getContent()) {
@@ -130,7 +130,7 @@ public class RequestBroker implements Closeable {
           retVal = objectMapper.readValue(content, resultClass);
         }
         long end = System.nanoTime();
-        statistics.updateStatistics(scenarioName, end - start);
+        statistics.updateStatistics(scenarioName, requestId, end - start);
         return retVal;
       }
     } catch (UnsupportedOperationException | IOException e) {

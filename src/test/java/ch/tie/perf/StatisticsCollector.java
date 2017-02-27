@@ -71,8 +71,8 @@ public class StatisticsCollector {
               StandardOpenOption.CREATE); PrintWriter pw = new PrintWriter(writer)) {
             measurements.stream()
                 .sorted()
-                .map(measurement -> measurement.getName() + ";" + measurement.getTimestamp() + ";"
-                    + measurement.getDuration())
+                .map(measurement -> measurement.getName() + ";" + measurement.getId() + ";" + measurement.getTimestamp()
+                    + ";" + measurement.getDuration())
                 .forEach(pw::println);
           } catch (IOException ioe) {
             LOGGER.error("cannot write statistics: ", ioe);

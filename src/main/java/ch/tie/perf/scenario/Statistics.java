@@ -9,8 +9,9 @@ public class Statistics {
 
   private final List<Measurement> measurements = Collections.synchronizedList(new ArrayList<>());
 
-  public void updateStatistics(String name, long duration) {
-    Measurement measurement = new Measurement(name, System.currentTimeMillis(), TimeUnit.NANOSECONDS.toMillis(duration));
+  public void updateStatistics(String name, long requestId, long duration) {
+    Measurement measurement = new Measurement(name, requestId, System.currentTimeMillis(),
+        TimeUnit.NANOSECONDS.toMillis(duration));
     measurements.add(measurement);
   }
 
