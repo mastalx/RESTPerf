@@ -7,13 +7,12 @@ import java.util.concurrent.Future;
 import org.junit.Test;
 
 import ch.tie.perf.ScenarioRunner;
+import ch.tie.perf.ScenarioRunnerTest;
 import ch.tie.perf.StatisticsCollector;
 import ch.tie.perf.http.RequestBroker;
 
 public class RunSucherTest {
 
-  private final static String KONS_REST2 = "http://10.5.68.215:7501";
-  private final static String CLIENT_IP = "10.5.69.18";
 
   @Test
   public void runSucherOnKons() throws Exception {
@@ -21,12 +20,13 @@ public class RunSucherTest {
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
     String servicePassword = "Sonne123";
-    String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
+    String initialURI = ScenarioRunnerTest.BACKEND + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
     boolean saveFile = false;
     Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
-        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
+        RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats,
+            ScenarioRunnerTest.CLIENT_IP)) {
 
       RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, saveFile);
 

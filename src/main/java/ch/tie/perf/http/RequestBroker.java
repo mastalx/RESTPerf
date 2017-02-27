@@ -6,8 +6,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -43,12 +45,15 @@ public class RequestBroker implements Closeable {
   private static final String ACCEPT_HEADER = "Accept";
   private static final String IENGINE_USER = "IENGINE_USER";
   private static final String X_FORWARDED_FOR = "X-Forwarded-For";
+  private static final String CORRLEATION_ID = "Correlation-ID";
 
   private final CloseableHttpClient restClient;
   private final String iengineUser;
   private final ObjectMapper objectMapper;
   private final Statistics statistics;
   private final String clientIP;
+
+  private final AtomicInteger corrIdCounter = new AtomicInteger(0);
 
   /**
    * Constructor.
@@ -94,23 +99,27 @@ public class RequestBroker implements Closeable {
       final Class<T> resultClass,
       String scenarioName) {
 
+    String nextId = Integer.toString(corrIdCounter.getAndIncrement());
     long start = System.nanoTime();
     // Do the rest service call
     request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(ACCEPT_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(IENGINE_USER, iengineUser);
     request.addHeader(X_FORWARDED_FOR, clientIP);
+    request.addHeader(CORRLEATION_ID, nextId);
+    LOGGER.debug("sending Request with Correlation-Id: " + nextId);
     try (CloseableHttpResponse response = restClient.execute(request)) {
 
       // Check if an exception occurred on the server
       final StatusLine statusLine = response.getStatusLine();
-      if (statusLine.getStatusCode() == 500) {
+      final Header responseCorrelationId = response.getFirstHeader(CORRLEATION_ID);
+      LOGGER.debug("Correlation-Id: " + responseCorrelationId + ", Request Status: " + statusLine);
+      if (statusLine.getStatusCode() != 200) {
         final String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        throw new RuntimeException(
-            "error 500 occured request:" + request + System.lineSeparator() + " response: " + responseContent);
+        throw new RuntimeException("Correlation-Id: " + responseCorrelationId + ", error " + statusLine.getStatusCode()
+            + " occured request:" + request + System.lineSeparator() + " response: " + responseContent);
       }
       // Map the content to the requested result class
-
       try (InputStream content = response.getEntity().getContent()) {
         T retVal;
         if (FileHolder.class.equals(resultClass)) {

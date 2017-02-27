@@ -17,11 +17,10 @@ import ch.tie.perf.scenario.Statistics;
 
 public class ScenarioRunnerTest {
 
-
   private static final Logger LOGGER = LogManager.getLogger(ScenarioRunnerTest.class);
 
-  private final static String KONS_REST2 = "http://10.5.68.215:7501";
-  private final static String CLIENT_IP = "10.244.64.94";
+  public final static String BACKEND = "http://10.5.68.215:7501";
+  public final static String CLIENT_IP = "foobar";
 
   private static final boolean SAVE_FILE = false;
 
@@ -53,7 +52,7 @@ public class ScenarioRunnerTest {
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
     String servicePassword = "Sonne123";
-    String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
+    String initialURI = BACKEND + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3013955";
     String experimentName = "3x100_";
 
@@ -83,7 +82,7 @@ public class ScenarioRunnerTest {
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
     String servicePassword = "Sonne123";
-    String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
+    String initialURI = BACKEND + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3540616";
     String experimentName = "1x300_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
@@ -111,7 +110,7 @@ public class ScenarioRunnerTest {
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
     String servicePassword = "Sonne123";
-    String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
+    String initialURI = BACKEND + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
     String experimentName = "10x30";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
