@@ -23,11 +23,12 @@ public class RunSucherTest {
     String servicePassword = "Sonne123";
     String initialURI = KONS_REST2 + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
-
+    boolean saveFile = false;
     Statistics stats = new Statistics();
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
-      RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb);
+
+      RunSucher runSucher = new RunSucher(scenarioRunner, initialURI, pid, rb, saveFile);
 
       Future<Scenario> future = scenarioRunner.run(runSucher);
 
