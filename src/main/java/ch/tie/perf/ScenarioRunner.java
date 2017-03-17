@@ -20,36 +20,36 @@ public class ScenarioRunner implements Closeable {
 
   public ScenarioRunner(int parallelism) {
     LOGGER.info("startup Performance test with parallelism: " + parallelism);
-    executorService = Executors.newFixedThreadPool(parallelism);
+    executorService = Executors.newWorkStealingPool(parallelism);
   }
 
 
   public void runAndWait(Scenario scenario) {
     try {
-      executorService.submit(scenario).get();
+      getExecutorService().submit(scenario).get();
     } catch (InterruptedException | ExecutionException exception) {
       LOGGER.error(exception);
     }
   }
 
   public Future<Scenario> run(Scenario scenario) {
-    return executorService.submit(scenario);
+    return getExecutorService().submit(scenario);
   }
 
 
   private void shutDownPerformanceTest() {
 
-    executorService.shutdown(); // Disable new tasks from being submitted
+    getExecutorService().shutdown(); // Disable new tasks from being submitted
     try {
       // Wait a while for existing tasks to terminate
-      if (!executorService.awaitTermination(20, TimeUnit.SECONDS)) {
-        executorService.shutdownNow(); // Cancel currently executing tasks
+      if (!getExecutorService().awaitTermination(20, TimeUnit.SECONDS)) {
+        getExecutorService().shutdownNow(); // Cancel currently executing tasks
         // Wait a while for tasks to respond to being cancelled
-        executorService.awaitTermination(20, TimeUnit.SECONDS);
+        getExecutorService().awaitTermination(20, TimeUnit.SECONDS);
       }
     } catch (InterruptedException ie) {
       LOGGER.error(ie);
-      executorService.shutdownNow();
+      getExecutorService().shutdownNow();
     }
   }
 
@@ -57,5 +57,10 @@ public class ScenarioRunner implements Closeable {
   @Override
   public void close() throws IOException {
     shutDownPerformanceTest();
+  }
+
+
+  public ExecutorService getExecutorService() {
+    return executorService;
   }
 }

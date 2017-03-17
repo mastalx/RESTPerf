@@ -27,14 +27,13 @@ import ch.tie.perf.scenario.Statistics;
 public class StatisticsCollector {
 
   private static final Logger LOGGER = LogManager.getLogger(StatisticsCollector.class);
-  private final SimpleDateFormat filenamePrefixFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+  public final SimpleDateFormat filenamePrefixFormat = new SimpleDateFormat("yyyyMMddHHmmss");
   private final Statistics stats;
 
 
   public StatisticsCollector(Statistics stats) {
     this.stats = stats;
   }
-
 
   public void waitForEndAndPrintStats(List<Future<Scenario>> tasks, String experiment) {
     Date now = new Date();
@@ -43,7 +42,6 @@ public class StatisticsCollector {
     waitForEndOfTasks(tasks);
     printStatistics(fileNamePrefix);
   }
-
 
   private void waitForEndOfTasks(List<Future<Scenario>> tasks) {
     Deque<Future<Scenario>> queue = new LinkedList<>(tasks);
@@ -61,7 +59,7 @@ public class StatisticsCollector {
   }
 
 
-  private void printStatistics(String prefix) {
+  public void printStatistics(String prefix) {
     stats.getMeasurements()
         .stream()
         .collect(Collectors.groupingBy(Measurement::getName))

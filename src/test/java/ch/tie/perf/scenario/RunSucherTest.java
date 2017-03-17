@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.tie.perf.ScenarioRunner;
@@ -11,8 +12,8 @@ import ch.tie.perf.ScenarioRunnerTest;
 import ch.tie.perf.StatisticsCollector;
 import ch.tie.perf.http.RequestBroker;
 
+@Ignore
 public class RunSucherTest {
-
 
   @Test
   public void runSucherOnKons() throws Exception {
