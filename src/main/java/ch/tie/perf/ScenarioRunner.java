@@ -20,9 +20,8 @@ public class ScenarioRunner implements Closeable {
 
   public ScenarioRunner(int parallelism) {
     LOGGER.info("startup Performance test with parallelism: " + parallelism);
-    executorService = Executors.newWorkStealingPool(parallelism);
+    this.executorService = Executors.newWorkStealingPool(parallelism);
   }
-
 
   public void runAndWait(Scenario scenario) {
     try {
@@ -35,7 +34,6 @@ public class ScenarioRunner implements Closeable {
   public Future<Scenario> run(Scenario scenario) {
     return getExecutorService().submit(scenario);
   }
-
 
   private void shutDownPerformanceTest() {
 
@@ -58,7 +56,6 @@ public class ScenarioRunner implements Closeable {
   public void close() throws IOException {
     shutDownPerformanceTest();
   }
-
 
   public ExecutorService getExecutorService() {
     return executorService;

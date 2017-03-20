@@ -17,6 +17,8 @@ import ch.tie.perf.scenario.Statistics;
 
 public class ScenarioRunnerTest {
 
+  private static final int PARALLELISM = 80;
+
   private static final Logger LOGGER = LogManager.getLogger(ScenarioRunnerTest.class);
 
   public final static String BACKEND = "http://10.5.69.18:7501";
@@ -24,7 +26,7 @@ public class ScenarioRunnerTest {
 
   private static final boolean SAVE_FILE = false;
 
-  private static final int MULTIPLIER = 15;
+  private static final int MULTIPLIER = 5;
 
   @Test
   public void runFirstScenario() throws IOException {
@@ -59,8 +61,9 @@ public class ScenarioRunnerTest {
     String experimentName = "3x100_";
 
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    long startTime = System.currentTimeMillis();
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(PARALLELISM);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
@@ -74,7 +77,7 @@ public class ScenarioRunnerTest {
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
-    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName + " took: " + (System.currentTimeMillis() - startTime) + "ms");
 
   }
 
@@ -88,8 +91,9 @@ public class ScenarioRunnerTest {
     String pid = "3540616";
     String experimentName = "1x300_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    long startTime = System.currentTimeMillis();
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(PARALLELISM);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
@@ -102,7 +106,7 @@ public class ScenarioRunnerTest {
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
-    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName + " took: " + (System.currentTimeMillis() - startTime) + "ms");
 
   }
 
@@ -114,10 +118,11 @@ public class ScenarioRunnerTest {
     String servicePassword = "Sonne123";
     String initialURI = BACKEND + "/rest2/objects?q=PAV%20Dokumentenliste";
     String pid = "3555973";
-    String experimentName = "10x30";
+    String experimentName = "10x30_";
     LOGGER.info("STARTING EXPERIMENT" + experimentName);
+    long startTime = System.currentTimeMillis();
     Statistics stats = new Statistics();
-    try (ScenarioRunner scenarioRunner = new ScenarioRunner(100);
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(PARALLELISM);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
       List<Future<Scenario>> taskList = new ArrayList<>();
@@ -130,7 +135,7 @@ public class ScenarioRunnerTest {
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       statsHelper.waitForEndAndPrintStats(taskList, experimentName);
     }
-    LOGGER.info("FINISHED EXPERIMENT" + experimentName);
+    LOGGER.info("FINISHED EXPERIMENT" + experimentName + " took: " + (System.currentTimeMillis() - startTime) + "ms");
 
   }
 }
