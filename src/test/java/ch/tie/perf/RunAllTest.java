@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -50,8 +49,7 @@ public class RunAllTest {
       List<CompletableFuture<Void>> futures = IntStream.range(0, 3 * MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
-          .map(r -> r.run().join())
-          .flatMap(Function.identity())
+          .flatMap(RunAll::run)
           .collect(Collectors.toList());
       futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 
@@ -85,8 +83,7 @@ public class RunAllTest {
       List<CompletableFuture<Void>> futures = IntStream.range(0, 1 * MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
-          .map(r -> r.run().join())
-          .flatMap(Function.identity())
+          .flatMap(RunAll::run)
           .collect(Collectors.toList());
       futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 
@@ -120,8 +117,7 @@ public class RunAllTest {
       List<CompletableFuture<Void>> futures = IntStream.range(0, 10 * MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
-          .map(r -> r.run().join())
-          .flatMap(Function.identity())
+          .flatMap(RunAll::run)
           .collect(Collectors.toList());
       futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
 

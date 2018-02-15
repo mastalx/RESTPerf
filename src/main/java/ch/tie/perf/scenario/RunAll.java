@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
@@ -38,16 +37,14 @@ public class RunAll {
     this.saveFile = saveFile;
   }
 
-  public CompletableFuture<Stream<CompletableFuture<Void>>> run() {
-    return CompletableFuture.supplyAsync(() -> this.getSuchenLink(), executor)
-        .thenApplyAsync(suchenLink -> doSearch(suchenLink), executor)
-        .thenApplyAsync(dokumentenliste -> {
-          return dokumentenliste.getObjList()
-              .values()
-              .parallelStream()
-              .map(searchItem -> runView(searchItem.getLink("object").getHref()))
-              .flatMap(Function.identity());
-        }, executor);
+  public Stream<CompletableFuture<Void>> run() {
+    return CompletableFuture.supplyAsync(this::getSuchenLink, executor)
+        .thenApplyAsync(this::doSearch, executor)
+        .thenApplyAsync(dokumentenliste -> dokumentenliste.getObjList()
+            .values()
+            .parallelStream()
+            .flatMap(searchItem -> runView(searchItem.getLink("object").getHref())), executor)
+        .join();
   }
 
   private Obj doSearch(String suchenLink) {
@@ -77,8 +74,8 @@ public class RunAll {
       CompletableFuture<Void> view = CompletableFuture.runAsync(() -> getBytes(links.viewLink, "GET_PDF"), executor);
       CompletableFuture<Void> stream = CompletableFuture.runAsync(() -> getBytes(links.streamLink, "GET_PDF_STREAMED"),
           executor);
-      CompletableFuture<Void> thumbnail = CompletableFuture
-          .runAsync(() -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"), executor);
+      CompletableFuture<Void> thumbnail = CompletableFuture.runAsync(
+          () -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"), executor);
       return Stream.of(view, stream, thumbnail);
     }, executor).join();
   }
@@ -116,7 +113,7 @@ public class RunAll {
 
   private static class Links {
 
-    private static Links EMTPY_LINKS = new Links("", "", "");
+    private static final Links EMTPY_LINKS = new Links("", "", "");
 
     private final String viewLink;
     private final String streamLink;
