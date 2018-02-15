@@ -1,5 +1,8 @@
 package ch.tie.perf.scenario;
 
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,8 +41,7 @@ public class RunAll {
   }
 
   public Stream<CompletableFuture<Void>> run() {
-    return CompletableFuture.supplyAsync(this::getSuchenLink, executor)
-        .thenApplyAsync(this::doSearch, executor)
+    return supplyAsync(this::getSuchenLink, executor).thenApplyAsync(this::doSearch, executor)
         .thenApplyAsync(dokumentenliste -> dokumentenliste.getObjList()
             .values()
             .parallelStream()
@@ -70,12 +72,10 @@ public class RunAll {
 
 
   private Stream<CompletableFuture<Void>> runView(final String menuLink) {
-    return CompletableFuture.supplyAsync(() -> getLinks(menuLink), executor).thenApplyAsync(links -> {
-      CompletableFuture<Void> view = CompletableFuture.runAsync(() -> getBytes(links.viewLink, "GET_PDF"), executor);
-      CompletableFuture<Void> stream = CompletableFuture.runAsync(() -> getBytes(links.streamLink, "GET_PDF_STREAMED"),
-          executor);
-      CompletableFuture<Void> tNail = CompletableFuture.runAsync(() -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"),
-          executor);
+    return supplyAsync(() -> getLinks(menuLink), executor).thenApplyAsync(links -> {
+      CompletableFuture<Void> view = runAsync(() -> getBytes(links.viewLink, "GET_PDF"), executor);
+      CompletableFuture<Void> stream = runAsync(() -> getBytes(links.streamLink, "GET_PDF_STREAMED"), executor);
+      CompletableFuture<Void> tNail = runAsync(() -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"), executor);
       return Stream.of(view, stream, tNail);
     }, executor).join();
   }

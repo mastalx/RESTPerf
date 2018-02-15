@@ -1,9 +1,10 @@
 package ch.tie.perf;
 
+import static java.time.LocalDateTime.now;
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
@@ -48,12 +49,11 @@ public class RunAllTest {
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList())
+          .collect(toList())
           .forEach(CompletableFuture::join);
 
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
-      Date now = new Date();
-      String fileNamePrefix = statsHelper.filenamePrefixFormat.format(now) + "_" + experimentName + "_";
+      String fileNamePrefix = now().format(statsHelper.filenamePrefixFormat) + "_" + experimentName + "_";
       statsHelper.printStatistics(fileNamePrefix);
 
     }
@@ -82,11 +82,10 @@ public class RunAllTest {
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList())
+          .collect(toList())
           .forEach(CompletableFuture::join);
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
-      Date now = new Date();
-      String fileNamePrefix = statsHelper.filenamePrefixFormat.format(now) + "_" + experimentName + "_";
+      String fileNamePrefix = now().format(statsHelper.filenamePrefixFormat) + "_" + experimentName + "_";
       statsHelper.printStatistics(fileNamePrefix);
     }
 
@@ -115,13 +114,13 @@ public class RunAllTest {
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList())
+          .collect(toList())
           .forEach(CompletableFuture::join);
 
 
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
-      Date now = new Date();
-      String fileNamePrefix = statsHelper.filenamePrefixFormat.format(now) + "_" + experimentName + "_";
+
+      String fileNamePrefix = now().format(statsHelper.filenamePrefixFormat) + "_" + experimentName + "_";
       statsHelper.printStatistics(fileNamePrefix);
     }
     LOGGER.info("FINISHED EXPERIMENT" + experimentName + " took: " + (System.currentTimeMillis() - startTime) + "ms");

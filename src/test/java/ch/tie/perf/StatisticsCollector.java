@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +27,7 @@ import ch.tie.perf.scenario.Statistics;
 public class StatisticsCollector {
 
   private static final Logger LOGGER = LogManager.getLogger(StatisticsCollector.class);
-  public final SimpleDateFormat filenamePrefixFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+  public final DateTimeFormatter filenamePrefixFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
   private final Statistics stats;
 
 
@@ -36,8 +36,8 @@ public class StatisticsCollector {
   }
 
   public void waitForEndAndPrintStats(List<Future<Scenario>> tasks, String experiment) {
-    Date now = new Date();
-    String fileNamePrefix = filenamePrefixFormat.format(now) + "_" + experiment + "_";
+
+    String fileNamePrefix = LocalDateTime.now().format(filenamePrefixFormat) + "_" + experiment + "_";
 
     waitForEndOfTasks(tasks);
     printStatistics(fileNamePrefix);
