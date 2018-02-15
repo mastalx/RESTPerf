@@ -2,9 +2,7 @@ package ch.tie.perf;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,15 +21,15 @@ public class RunAllTest {
 
   private static final Logger LOGGER = LogManager.getLogger(RunAllTest.class);
 
-  public final static String BACKEND = "http://10.5.69.18:7501";
-  public final static String CLIENT_IP = "foobar";
+  private final static String BACKEND = "http://10.5.69.18:7501";
+  private final static String CLIENT_IP = "foobar";
 
   private static final boolean SAVE_FILE = false;
 
   private static final int MULTIPLIER = 5;
 
   @Test
-  public void runSucherOnKons100() throws IOException, InterruptedException, ExecutionException {
+  public void runSucherOnKons100() throws IOException {
 
 
     String iengineUser = "TIESUMSE";
@@ -46,12 +44,12 @@ public class RunAllTest {
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(PARALLELISM);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
-      List<CompletableFuture<Void>> futures = IntStream.range(0, 3 * MULTIPLIER)
+      IntStream.range(0, 3 * MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList());
-      futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+          .collect(Collectors.toList())
+          .forEach(CompletableFuture::join);
 
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       Date now = new Date();
@@ -64,7 +62,7 @@ public class RunAllTest {
   }
 
   @Test
-  public void runSucherOnKons300() throws IOException, InterruptedException, ExecutionException {
+  public void runSucherOnKons300() throws IOException {
 
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
@@ -80,13 +78,12 @@ public class RunAllTest {
     try (ScenarioRunner scenarioRunner = new ScenarioRunner(PARALLELISM);
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
-      List<CompletableFuture<Void>> futures = IntStream.range(0, 1 * MULTIPLIER)
+      IntStream.range(0, MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList());
-      futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
-
+          .collect(Collectors.toList())
+          .forEach(CompletableFuture::join);
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       Date now = new Date();
       String fileNamePrefix = statsHelper.filenamePrefixFormat.format(now) + "_" + experimentName + "_";
@@ -99,7 +96,7 @@ public class RunAllTest {
   }
 
   @Test
-  public void runSucherOnKons30() throws IOException, InterruptedException, ExecutionException {
+  public void runSucherOnKons30() throws IOException {
 
     String iengineUser = "TIESUMSE";
     String serviceUser = "PAT_ARCHIVE_VIEWER_USER";
@@ -114,12 +111,13 @@ public class RunAllTest {
         RequestBroker rb = new RequestBroker(iengineUser, serviceUser, servicePassword, stats, CLIENT_IP)) {
 
 
-      List<CompletableFuture<Void>> futures = IntStream.range(0, 10 * MULTIPLIER)
+      IntStream.range(0, 10 * MULTIPLIER)
           .parallel()
           .mapToObj(i -> new RunAll(scenarioRunner.getExecutorService(), initialURI, pid, rb, SAVE_FILE))
           .flatMap(RunAll::run)
-          .collect(Collectors.toList());
-      futures.stream().map(CompletableFuture::join).collect(Collectors.toList());
+          .collect(Collectors.toList())
+          .forEach(CompletableFuture::join);
+
 
       StatisticsCollector statsHelper = new StatisticsCollector(stats);
       Date now = new Date();

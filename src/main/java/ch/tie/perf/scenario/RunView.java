@@ -1,6 +1,5 @@
 package ch.tie.perf.scenario;
 
-import java.io.IOException;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,7 +30,7 @@ public class RunView extends AbstractScenario {
   }
 
   @Override
-  public RunView call() throws Exception {
+  public RunView call() {
     try {
       Obj menu = rb.doGet(menuLink, Obj.class, "GET_DOCUMENT_MENU");
       Link link;
@@ -79,18 +78,16 @@ public class RunView extends AbstractScenario {
   }
 
 
-  private String getPDF(String viewLink) throws IOException {
+  private void getPDF(String viewLink) {
     RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF", rb, saveFile);
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
-    return viewLink;
   }
 
-  private String getPDFStreamed(String viewLink) throws IOException {
+  private void getPDFStreamed(String viewLink) {
     RunGetBytes viewPDFScenario = new RunGetBytes(viewLink, "GET_PDF_STREAMED", rb, saveFile);
     Future<Scenario> viewPdfFuture = scenarioRunner.run(viewPDFScenario);
     addChildTask(viewPdfFuture);
-    return viewLink;
   }
 
 }

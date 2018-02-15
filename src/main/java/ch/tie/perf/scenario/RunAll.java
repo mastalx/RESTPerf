@@ -74,9 +74,9 @@ public class RunAll {
       CompletableFuture<Void> view = CompletableFuture.runAsync(() -> getBytes(links.viewLink, "GET_PDF"), executor);
       CompletableFuture<Void> stream = CompletableFuture.runAsync(() -> getBytes(links.streamLink, "GET_PDF_STREAMED"),
           executor);
-      CompletableFuture<Void> thumbnail = CompletableFuture.runAsync(
-          () -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"), executor);
-      return Stream.of(view, stream, thumbnail);
+      CompletableFuture<Void> tNail = CompletableFuture.runAsync(() -> getBytes(links.thumbnailLink, "GET_THUMBNAIL"),
+          executor);
+      return Stream.of(view, stream, tNail);
     }, executor).join();
   }
 
@@ -94,7 +94,7 @@ public class RunAll {
   }
 
 
-  public void getBytes(String viewLink, String category) {
+  private void getBytes(String viewLink, String category) {
     try {
       LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
       FileHolder file = requestBroker.doGet(viewLink, FileHolder.class, category);
@@ -119,7 +119,7 @@ public class RunAll {
     private final String streamLink;
     private final String thumbnailLink;
 
-    public Links(String viewLink, String streamLink, String thumbnailLink) {
+    Links(String viewLink, String streamLink, String thumbnailLink) {
       this.viewLink = viewLink;
       this.streamLink = streamLink;
       this.thumbnailLink = thumbnailLink;

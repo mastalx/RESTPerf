@@ -36,7 +36,7 @@ public class RunSucher extends AbstractScenario {
 
 
   @Override
-  public RunSucher call() throws Exception {
+  public RunSucher call() {
     LOGGER.debug("running Sucher");
 
     try {
@@ -77,7 +77,7 @@ public class RunSucher extends AbstractScenario {
         .parallelStream()
         .map(searchItem -> searchItem.getLink("object").getHref())
         .map(menuLink -> new RunView(menuLink, rb, scenarioRunner, saveFile))
-        .map(runView -> scenarioRunner.run(runView))
+        .map(scenarioRunner::run)
         .forEach(this::addChildTask);
   }
 
