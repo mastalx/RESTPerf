@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.junit.Test;
 
 import ch.tie.perf.scenario.Statistics;
+import ch.tie.perf.statistic.StatisticsCollector;
 
 public class DummyTest {
 

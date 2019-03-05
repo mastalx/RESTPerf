@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -46,10 +47,9 @@ public class RequestBroker implements Closeable {
   private static final String X_FORWARDED_FOR = "X-Forwarded-For";
 
   private final CloseableHttpClient restClient;
-  private final String iengineUser;
+  private final Optional<String> iengineUser;
   private final ObjectMapper objectMapper;
   private final Statistics statistics;
-  private final String clientIP;
 
   private final AtomicLong corrIdCounter = new AtomicLong(0);
 
@@ -59,14 +59,21 @@ public class RequestBroker implements Closeable {
   public RequestBroker(String iengineUser,
       String serviceUser,
       String servicePassword,
-      Statistics statistics,
-      String clientIP) {
-
-    this.iengineUser = iengineUser;
+      Statistics statistics) {
+    this.iengineUser = Optional.of(iengineUser);
     this.statistics = statistics;
     this.objectMapper = new ObjectMapper();
-    this.restClient = createRestClient(serviceUser, servicePassword);
-    this.clientIP = clientIP;
+    this.restClient = createRestClient(Optional.of(new UsernamePasswordCredentials(serviceUser, servicePassword)));
+  }
+
+  /**
+   * Constructor.
+   */
+  public RequestBroker(Statistics statistics) {
+    this.statistics = statistics;
+    this.iengineUser = Optional.empty();
+    this.objectMapper = new ObjectMapper();
+    this.restClient = createRestClient();
   }
 
   public <T> T doGet(final String uri, final Class<T> resultClass, String scenarioName) {
@@ -102,8 +109,8 @@ public class RequestBroker implements Closeable {
     // Do the rest service call
     request.addHeader(CONTENT_TYPE_HEADER, CONTENT_TYPE_VALUE);
     request.addHeader(ACCEPT_HEADER, CONTENT_TYPE_VALUE);
-    request.addHeader(IENGINE_USER, iengineUser);
-    request.addHeader(X_FORWARDED_FOR, clientIP);
+
+    iengineUser.ifPresent(user -> request.addHeader(IENGINE_USER, user));
 
     LOGGER.debug("sending Request with Id: " + requestId);
     try (CloseableHttpResponse response = restClient.execute(request)) {
@@ -115,8 +122,9 @@ public class RequestBroker implements Closeable {
       int responseStatus = statusLine.getStatusCode();
       if (responseStatus != 200) {
         final String responseContent = EntityUtils.toString(response.getEntity(), StandardCharsets.UTF_8);
-        throw new RuntimeException("response with Id: " + requestId + ", error " + responseStatus + " occured request:"
-            + request + System.lineSeparator() + " response: " + responseContent);
+        throw new RuntimeException(
+            "response with Id: " + requestId + ", error " + responseStatus + " occured request:" + request
+                + System.lineSeparator() + " response: " + responseContent);
       }
       // Map the content to the requested result class
       try (InputStream content = response.getEntity().getContent()) {
@@ -154,11 +162,11 @@ public class RequestBroker implements Closeable {
         .orElse(scenarioName + UUID.randomUUID().toString());
   }
 
-  private CloseableHttpClient createRestClient(String username, String password) {
-    LOGGER.info("Connect to health engine rest using user '" + username + "'");
+  private CloseableHttpClient createRestClient(final Optional<UsernamePasswordCredentials> user) {
+    LOGGER.info("Connect to endpoint using user");
 
     final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+    user.ifPresent(u -> credentialsProvider.setCredentials(AuthScope.ANY, u));
 
     PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
     cm.setMaxTotal(400);
@@ -168,6 +176,10 @@ public class RequestBroker implements Closeable {
         .setConnectionManager(cm)
         .setConnectionManagerShared(true)
         .build();
+  }
+
+  private CloseableHttpClient createRestClient() {
+    return createRestClient(Optional.empty());
   }
 
   @Override
