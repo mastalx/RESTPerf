@@ -1,58 +1,43 @@
-buildscript {
-    repositories {
-	    mavenCentral()
-    }
-}
-
-plugins {
-  id 'net.researchgate.release' version '2.3.4'
-}
 apply plugin: 'java'
-apply plugin: 'eclipse'
-
-release {
-  git.requireBranch = 'trunk'
-}
-
-group = 'tie'
-
-task wrapper(type: Wrapper) {
-	description = 'Generates gradlew and gradlew.bat bootstrap scripts'
-	gradleVersion = '3.4.1'
-}
+apply plugin: 'application'
+apply from: "gradle/jupiter.gradle"
 
 
-jar{
-  manifest {
-    attributes 'Implementation-Title': 'REST API Performance Tests', 'Implementation-Version': version 
-  }
-}
+group = 'ch.tie'
 
 dependencies {
-	// http://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.4'
-
-	// http://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 
 	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.1'
 	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.1'
-	
-	// http://mvnrepository.com/artifact/commons-io/commons-io
 	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
-	// http://mvnrepository.com/artifact/org.springframework.hateoas/spring-hateoas
 	compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
 
-	  
+	compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
-	testCompile 'junit:junit:4.12'
 	testCompile 'org.hamcrest:hamcrest-core:1.3'
-    
-    configurations.create('ecj')
-	ecj 'org.eclipse.jdt.core.compiler:ecj:4.4'
 }
 
 repositories {
 	mavenCentral()
+}
+
+application {
+	mainClassName = 'ch.tie.perf.WadoPerfMain'
+	applicationName = 'WadoPerf'
+}
+
+task createRESTPerfApp(type: CreateStartScripts) {
+	mainClassName = 'ch.tie.perf.RestPerfMain'
+	classpath = startScripts.classpath
+	outputDir = startScripts.outputDir
+	applicationName = 'RestPerf'
+}
+
+applicationDistribution.into("bin") {
+	duplicatesStrategy= DuplicatesStrategy.EXCLUDE
+	from(createRESTPerfApp)
+	fileMode = 0755
 }
