@@ -23,7 +23,7 @@ import org.apache.logging.log4j.Logger;
 import ch.tie.perf.http.RequestBroker;
 import ch.tie.perf.scenario.RunSucher;
 import ch.tie.perf.scenario.Scenario;
-import ch.tie.perf.scenario.Statistics;
+import ch.tie.perf.statistic.Statistics;
 import ch.tie.perf.statistic.StatisticsCollector;
 
 public class RestPerfMain {
@@ -65,16 +65,16 @@ public class RestPerfMain {
       // parse the command line arguments
       CommandLine line = parser.parse(options, args);
 
-      final Integer numberOfThreads = Integer.valueOf(line.getOptionValue(THREADS_OPT.getOpt(), "1"));
+      final int numberOfThreads = Integer.parseInt(line.getOptionValue(THREADS_OPT.getOpt(), "1"));
       final String endpoint = line.getOptionValue(ENDPOINT_OPT.getOpt());
-      final boolean saveFile = Boolean.valueOf(line.getOptionValue(SAVE_FILE_OPT.getOpt(), "false"));
+      final boolean saveFile = Boolean.parseBoolean(line.getOptionValue(SAVE_FILE_OPT.getOpt(), "false"));
       final String experimentName = line.getOptionValue(EXPERIMENT_NAME_OPT.getOpt(), REST2_EXPERIMENT);
 
       final String pid = line.getOptionValue(pidOpt.getOpt());
       final String restUser = line.getOptionValue(restUserOpt.getOpt());
       final String restPassword = line.getOptionValue(restPasswordOpt.getOpt());
       final String iengineUser = line.getOptionValue(iengineUserOpt.getOpt(), "");
-      final Integer numberOfTests = Integer.valueOf(line.getOptionValue(numberOfTestopt.getOpt(), "10"));
+      final int numberOfTests = Integer.parseInt(line.getOptionValue(numberOfTestopt.getOpt(), "10"));
 
       LOGGER.info("STARTING EXPERIMENT {}", experimentName);
       long startTime = System.currentTimeMillis();

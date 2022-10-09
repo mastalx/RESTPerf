@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ch.tie.perf.model.Obj;
 import ch.tie.perf.scenario.FileHolder;
-import ch.tie.perf.scenario.Statistics;
+import ch.tie.perf.statistic.Statistics;
 
 
 public class RequestBroker implements Closeable {

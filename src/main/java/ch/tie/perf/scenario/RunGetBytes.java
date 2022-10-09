@@ -38,7 +38,7 @@ public class RunGetBytes extends AbstractScenario {
   }
 
   @Override
-  public Scenario call() throws Exception {
+  public Scenario call() {
     try {
       LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
       FileHolder file = rb.doGet(viewLink, FileHolder.class, category);
