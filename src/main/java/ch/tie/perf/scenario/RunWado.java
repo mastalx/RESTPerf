@@ -1,6 +1,10 @@
 package ch.tie.perf.scenario;
 
-import static java.nio.file.Files.lines;
+import ch.tie.perf.ScenarioRunner;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.WadoInstance;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,13 +16,7 @@ import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ch.tie.perf.ScenarioRunner;
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.WadoInstance;
+import static java.nio.file.Files.lines;
 
 
 public class RunWado extends AbstractScenario {

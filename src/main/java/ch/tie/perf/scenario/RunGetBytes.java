@@ -1,15 +1,14 @@
 package ch.tie.perf.scenario;
 
+import ch.tie.perf.http.RequestBroker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ch.tie.perf.http.RequestBroker;
 
 public class RunGetBytes extends AbstractScenario {
 

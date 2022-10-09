@@ -54,11 +54,16 @@ buildscript {
 }
 compileKotlin {
 	kotlinOptions {
-		jvmTarget = "1.8"
+		jvmTarget = "17"
 	}
 }
 compileTestKotlin {
 	kotlinOptions {
-		jvmTarget = "1.8"
+		jvmTarget = "17"
+	}
+}
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
 	}
 }

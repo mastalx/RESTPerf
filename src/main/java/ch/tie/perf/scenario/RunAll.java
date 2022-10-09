@@ -1,7 +1,10 @@
 package ch.tie.perf.scenario;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.Obj;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.hateoas.Link;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,12 +16,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.hateoas.Link;
-
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.Obj;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class RunAll {
 

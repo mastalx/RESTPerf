@@ -1,14 +1,13 @@
 package ch.tie.perf.scenario;
 
-import java.util.concurrent.Future;
-
+import ch.tie.perf.ScenarioRunner;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.Obj;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
 
-import ch.tie.perf.ScenarioRunner;
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.Obj;
+import java.util.concurrent.Future;
 
 
 public class RunView extends AbstractScenario {

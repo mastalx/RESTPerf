@@ -1,30 +1,20 @@
 package ch.tie.perf;
 
-import static ch.tie.perf.MainPerf.ENDPOINT_OPT;
-import static ch.tie.perf.MainPerf.EXPERIMENT_NAME_OPT;
-import static ch.tie.perf.MainPerf.SAVE_FILE_OPT;
-import static ch.tie.perf.MainPerf.THREADS_OPT;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.scenario.RunWado;
+import ch.tie.perf.scenario.Scenario;
+import ch.tie.perf.statistic.Statistics;
+import ch.tie.perf.statistic.StatisticsCollector;
+import org.apache.commons.cli.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.scenario.RunWado;
-import ch.tie.perf.scenario.Scenario;
-import ch.tie.perf.statistic.Statistics;
-import ch.tie.perf.statistic.StatisticsCollector;
+import static ch.tie.perf.MainPerf.*;
 
 public class WadoPerfMain {
 

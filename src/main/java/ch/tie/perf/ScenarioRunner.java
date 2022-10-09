@@ -1,15 +1,10 @@
 package ch.tie.perf;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
+import ch.tie.perf.scenario.Scenario;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import ch.tie.perf.scenario.Scenario;
+import java.util.concurrent.*;
 
 public class ScenarioRunner implements AutoCloseable {
 

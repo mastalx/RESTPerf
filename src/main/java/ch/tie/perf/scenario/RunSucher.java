@@ -1,14 +1,13 @@
 package ch.tie.perf.scenario;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import ch.tie.perf.ScenarioRunner;
 import ch.tie.perf.http.RequestBroker;
 import ch.tie.perf.model.Obj;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class RunSucher extends AbstractScenario {

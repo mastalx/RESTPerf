@@ -1,13 +1,6 @@
 package ch.tie.perf.model;
 
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.jaxrs.JaxRsLinkBuilder;
-
-
 public class WadoInstance  {
 
   private String studyInstanceUid;

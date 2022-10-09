@@ -1,11 +1,11 @@
 package ch.tie.perf.model;
 
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.jaxrs.JaxRsLinkBuilder;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 
 public class Obj extends ResourceSupport {
@@ -13,7 +13,7 @@ public class Obj extends ResourceSupport {
   @Override
   public String toString() {
     return "Obj [objId=" + objId + ", links=" + getLinks() + ", attributes=" + attributes + ", attributeShows="
-        + attributeShows + ", objList=" + objList + ", uppers=" + uppers + ", lowers=" + lowers + "]";
+            + attributeShows + ", objList=" + objList + ", uppers=" + uppers + ", lowers=" + lowers + "]";
   }
 
   private long objId;
