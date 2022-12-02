@@ -25,7 +25,6 @@ public class RunAll {
   private static final Logger LOGGER = LogManager.getLogger(RunAll.class);
   private static final Path BINARIES_PATH = Paths.get("binaries");
 
-
   private final Executor executor;
   private final String initialURI;
   private final String pid;
