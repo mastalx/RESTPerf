@@ -1,10 +1,14 @@
 package ch.tie.perf;
 
-import ch.tie.perf.scenario.Scenario;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.concurrent.*;
+import ch.tie.perf.scenario.Scenario;
 
 public class ScenarioRunner implements AutoCloseable {
 
@@ -12,16 +16,8 @@ public class ScenarioRunner implements AutoCloseable {
   private final ExecutorService executorService;
 
   public ScenarioRunner(int parallelism) {
-    LOGGER.info("startup Performance test with parallelism: " + parallelism);
+    LOGGER.info("startup Performance test with parallelism: {}", parallelism);
     executorService = Executors.newWorkStealingPool(parallelism);
-  }
-
-  public void runAndWait(Scenario scenario) {
-    try {
-      getExecutorService().submit(scenario).get();
-    } catch (InterruptedException | ExecutionException exception) {
-      LOGGER.error(exception);
-    }
   }
 
   public Future<Scenario> run(Scenario scenario) {
@@ -37,7 +33,7 @@ public class ScenarioRunner implements AutoCloseable {
         pool.shutdownNow(); // Cancel currently executing tasks
         // Wait a while for tasks to respond to being cancelled
         if (!pool.awaitTermination(20, TimeUnit.SECONDS)) {
-          System.err.println("Pool did not terminate");
+          LOGGER.error("Pool did not terminate");
         }
       }
     } catch (InterruptedException ie) {

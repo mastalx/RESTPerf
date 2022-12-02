@@ -1,11 +1,11 @@
 package ch.tie.perf.model;
 
 
-import org.springframework.hateoas.ResourceSupport;
-import org.springframework.hateoas.jaxrs.JaxRsLinkBuilder;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.jaxrs.JaxRsLinkBuilder;
 
 
 public class Obj extends ResourceSupport {
@@ -13,16 +13,16 @@ public class Obj extends ResourceSupport {
   @Override
   public String toString() {
     return "Obj [objId=" + objId + ", links=" + getLinks() + ", attributes=" + attributes + ", attributeShows="
-            + attributeShows + ", objList=" + objList + ", uppers=" + uppers + ", lowers=" + lowers + "]";
+        + attributeShows + ", objList=" + objList + ", uppers=" + uppers + ", lowers=" + lowers + "]";
   }
 
   private long objId;
 
-  private Map<String, Object> attributes = new LinkedHashMap<String, Object>();
-  private Map<String, AttributeShow> attributeShows = new LinkedHashMap<String, AttributeShow>();
-  private Map<String, Obj> objList = new LinkedHashMap<String, Obj>();
-  private Map<String, Obj> uppers = new LinkedHashMap<String, Obj>();
-  private Map<String, Obj> lowers = new LinkedHashMap<String, Obj>();
+  private Map<String, Object> attributes = new LinkedHashMap<>();
+  private Map<String, AttributeShow> attributeShows = new LinkedHashMap<>();
+  private Map<String, Obj> objList = new LinkedHashMap<>();
+  private Map<String, Obj> uppers = new LinkedHashMap<>();
+  private Map<String, Obj> lowers = new LinkedHashMap<>();
 
   public Obj() {
   }
@@ -37,11 +37,11 @@ public class Obj extends ResourceSupport {
   }
 
   public void putLink(String rel, Class<?> clazz, Object... params) {
-    this.add(JaxRsLinkBuilder.linkTo(clazz, params).withRel(rel));
+    add(JaxRsLinkBuilder.linkTo(clazz, params).withRel(rel));
   }
 
   public void putLinkWithSlash(String rel, String slash, Class<?> clazz, Object... params) {
-    this.add(JaxRsLinkBuilder.linkTo(clazz, params).slash(slash).withRel(rel));
+    add(JaxRsLinkBuilder.linkTo(clazz, params).slash(slash).withRel(rel));
   }
 
 

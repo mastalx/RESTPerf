@@ -1,13 +1,14 @@
 package ch.tie.perf.scenario;
 
-import ch.tie.perf.ScenarioRunner;
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.Obj;
+import java.util.concurrent.Future;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.hateoas.Link;
 
-import java.util.concurrent.Future;
+import ch.tie.perf.ScenarioRunner;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.Obj;
 
 
 public class RunView extends AbstractScenario {
@@ -38,7 +39,7 @@ public class RunView extends AbstractScenario {
       }
       String viewLink = link.getHref();
 
-      LOGGER.debug("got view link:" + viewLink);
+      LOGGER.debug("got view link:{}", viewLink);
 
       getPDF(viewLink);
 
@@ -48,7 +49,7 @@ public class RunView extends AbstractScenario {
       getNewThumbnail(menu);
 
 
-      LOGGER.debug("done view with link:" + viewLink);
+      LOGGER.debug("done view with link: {}", viewLink);
     } catch (Exception e) {
       LOGGER.error("error in view:", e);
     }
@@ -60,7 +61,7 @@ public class RunView extends AbstractScenario {
     if (newThumbnailLink != null) {
       String thumbnailLink = newThumbnailLink.getHref();
       thumbnailLink = thumbnailLink + "?imageType=THUMBNAIL_M";
-      LOGGER.debug("got thumbnail link without protocol:" + thumbnailLink);
+      LOGGER.debug("got thumbnail link without protocol: {}", thumbnailLink);
       RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL_NO_PROTOCOL", rb, saveFile);
       Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
       addChildTask(viewThumbnailFuture);
@@ -70,7 +71,7 @@ public class RunView extends AbstractScenario {
 
   private void getOldThumnbail(String viewLink) {
     String thumbnailLink = viewLink + "?imageType=THUMBNAIL_M";
-    LOGGER.debug("got thumbnail link with protocol:" + thumbnailLink);
+    LOGGER.debug("got thumbnail link with protocol: {}", thumbnailLink);
     RunGetBytes viewThumbnailScenario = new RunGetBytes(thumbnailLink, "GET_THUMBNAIL", rb, saveFile);
     Future<Scenario> viewThumbnailFuture = scenarioRunner.run(viewThumbnailScenario);
     addChildTask(viewThumbnailFuture);

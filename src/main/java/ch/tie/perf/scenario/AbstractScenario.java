@@ -1,12 +1,11 @@
 package ch.tie.perf.scenario;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractScenario implements Scenario {
 

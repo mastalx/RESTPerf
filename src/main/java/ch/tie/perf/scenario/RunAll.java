@@ -1,10 +1,7 @@
 package ch.tie.perf.scenario;
 
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.Obj;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.hateoas.Link;
+import static java.util.concurrent.CompletableFuture.runAsync;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,8 +13,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.hateoas.Link;
+
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.Obj;
 
 public class RunAll {
 
@@ -65,7 +66,7 @@ public class RunAll {
     finder = finder.getObjList().values().iterator().next();
 
     String suchenLink = finder.getLink("SUCHEN").getHref();
-    LOGGER.debug("got suchenLink:" + suchenLink);
+    LOGGER.debug("got suchenLink: {}", suchenLink);
     return suchenLink;
   }
 
@@ -95,7 +96,7 @@ public class RunAll {
 
   private void getBytes(String viewLink, String category) {
     try {
-      LOGGER.debug("start getting bytes on category:" + category + " with link: " + viewLink);
+      LOGGER.debug("start getting bytes on category: {} with link: {}", category, viewLink);
       FileHolder file = requestBroker.doGet(viewLink, FileHolder.class, category);
 
       if (saveFile) {
@@ -103,7 +104,7 @@ public class RunAll {
         Files.write(temppdf, file.getBytes(), StandardOpenOption.CREATE);
       }
 
-      LOGGER.debug("finished getting bytes on category:" + category + " with link: " + viewLink);
+      LOGGER.debug("finished getting bytes on category: {} with link: {}", category, viewLink);
 
     } catch (Exception e) {
       LOGGER.error("error in getting bytes", e);

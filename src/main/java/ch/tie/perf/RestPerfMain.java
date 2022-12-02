@@ -1,20 +1,30 @@
 package ch.tie.perf;
 
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.scenario.RunSucher;
-import ch.tie.perf.scenario.Scenario;
-import ch.tie.perf.statistic.Statistics;
-import ch.tie.perf.statistic.StatisticsCollector;
-import org.apache.commons.cli.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static ch.tie.perf.MainPerf.ENDPOINT_OPT;
+import static ch.tie.perf.MainPerf.EXPERIMENT_NAME_OPT;
+import static ch.tie.perf.MainPerf.SAVE_FILE_OPT;
+import static ch.tie.perf.MainPerf.THREADS_OPT;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static ch.tie.perf.MainPerf.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.scenario.RunSucher;
+import ch.tie.perf.scenario.Scenario;
+import ch.tie.perf.statistic.Statistics;
+import ch.tie.perf.statistic.StatisticsCollector;
 
 public class RestPerfMain {
 
@@ -70,23 +80,8 @@ public class RestPerfMain {
       long startTime = System.currentTimeMillis();
 
       Statistics stats = new Statistics();
-      try (ScenarioRunner scenarioRunner = new ScenarioRunner(numberOfThreads);
-          RequestBroker rb = new RequestBroker(iengineUser, restUser, restPassword, stats)) {
-
-        StatisticsCollector statsHelper = new StatisticsCollector(stats);
-
-        List<Future<Scenario>> futures = new ArrayList<>();
-        for (int i = 0; i < numberOfTests; i++) {
-          RunSucher runSucher = new RunSucher(scenarioRunner, endpoint, pid, rb, saveFile);
-          Future<Scenario> future = scenarioRunner.run(runSucher);
-          futures.add(future);
-        }
-
-        statsHelper.waitForEndAndPrintStats(futures, experimentName);
-
-      } catch (IOException e) {
-        LOGGER.error("Connection failed.  Reason: {}", e.getMessage());
-      }
+      run(numberOfThreads, endpoint, saveFile, experimentName, pid, restUser, restPassword, iengineUser, numberOfTests,
+          stats);
 
       LOGGER.info("FINISHED EXPERIMENT {} took: {}ms", experimentName, (System.currentTimeMillis() - startTime));
 
@@ -99,5 +94,32 @@ public class RestPerfMain {
     }
   }
 
+  private static void run(int numberOfThreads,
+      String endpoint,
+      boolean saveFile,
+      String experimentName,
+      String pid,
+      String restUser,
+      String restPassword,
+      String iengineUser,
+      int numberOfTests,
+      Statistics stats) {
+    try (ScenarioRunner scenarioRunner = new ScenarioRunner(numberOfThreads);
+        RequestBroker rb = new RequestBroker(iengineUser, restUser, restPassword, stats)) {
 
+      StatisticsCollector statsHelper = new StatisticsCollector(stats);
+
+      List<Future<Scenario>> futures = new ArrayList<>();
+      for (int i = 0; i < numberOfTests; i++) {
+        RunSucher runSucher = new RunSucher(scenarioRunner, endpoint, pid, rb, saveFile);
+        Future<Scenario> future = scenarioRunner.run(runSucher);
+        futures.add(future);
+      }
+
+      statsHelper.waitForEndAndPrintStats(futures, experimentName);
+
+    } catch (IOException e) {
+      LOGGER.error("Connection failed.  Reason: {}", e.getMessage());
+    }
+  }
 }

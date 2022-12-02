@@ -1,13 +1,14 @@
 package ch.tie.perf.scenario;
 
-import ch.tie.perf.ScenarioRunner;
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.Obj;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
+import ch.tie.perf.ScenarioRunner;
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.Obj;
 
 
 public class RunSucher extends AbstractScenario {
@@ -80,14 +81,13 @@ public class RunSucher extends AbstractScenario {
         .forEach(this::addChildTask);
   }
 
-
   private String getSuchenLink(RequestBroker rb) {
 
     Obj finder = rb.doGet(initialURI, Obj.class, "GET_FINDER");
     finder = finder.getObjList().values().iterator().next();
 
     String suchenLink = finder.getLink("SUCHEN").getHref();
-    LOGGER.debug("got suchenLink:" + suchenLink);
+    LOGGER.debug("got suchenLink: {}", suchenLink);
     return suchenLink;
   }
 

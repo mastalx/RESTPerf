@@ -7,63 +7,68 @@ apply from: "gradle/jupiter.gradle"
 group = 'ch.tie'
 
 dependencies {
-	implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.4'
-	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.7.4'
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
 
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.1'
-	implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.1'
-	implementation group: 'commons-io', name: 'commons-io', version: '2.5'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.1'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.5'
 
-	implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
+    implementation group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.23.0.RELEASE'
 
-	implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
-	testImplementation 'org.hamcrest:hamcrest-core:2.2'
+    testImplementation 'org.hamcrest:hamcrest-core:2.2'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
+//application {
+//    mainClassName = 'ch.tie.perf.WadoPerfMain'
+//    applicationName = 'WadoPerf'
+//}
+
 application {
-	mainClassName = 'ch.tie.perf.WadoPerfMain'
-	applicationName = 'WadoPerf'
+    mainClassName = 'ch.tie.perf.RestPerfMain'
+    applicationName = 'RestPerfMain'
 }
 
 task createRESTPerfApp(type: CreateStartScripts) {
-	mainClassName = 'ch.tie.perf.RestPerfMain'
-	classpath = startScripts.classpath
-	outputDir = startScripts.outputDir
-	applicationName = 'RestPerf'
+    mainClassName = 'ch.tie.perf.RestPerfMain'
+    classpath = startScripts.classpath
+    outputDir = startScripts.outputDir
+    applicationName = 'RestPerf'
 }
 
 applicationDistribution.into("bin") {
-	duplicatesStrategy= DuplicatesStrategy.EXCLUDE
-	from(createRESTPerfApp)
-	fileMode = 0755
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(createRESTPerfApp)
+    fileMode = 0755
 }
 buildscript {
-	ext.kotlin_version = '1.7.20'
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-	}
+    ext.kotlin_version = '1.7.22'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 compileKotlin {
-	kotlinOptions {
-		jvmTarget = "17"
-	}
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 compileTestKotlin {
-	kotlinOptions {
-		jvmTarget = "17"
-	}
+    kotlinOptions {
+        jvmTarget = "17"
+    }
 }
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }

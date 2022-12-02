@@ -1,16 +1,16 @@
 package ch.tie.perf.scenario;
 
-import ch.tie.perf.ScenarioRunner;
-import ch.tie.perf.http.RequestBroker;
-import ch.tie.perf.model.WadoInstance;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import ch.tie.perf.http.RequestBroker;
+import ch.tie.perf.model.WadoInstance;
 
 
 public class RunGetWadoInstance extends AbstractScenario {
@@ -23,23 +23,17 @@ public class RunGetWadoInstance extends AbstractScenario {
     try {
       Files.createDirectories(BINARIES_PATH);
     } catch (IOException e) {
-      LOGGER.error("could not create binaries folder: " + BINARIES_PATH, e);
+      LOGGER.error("could not create binaries folder: {}", BINARIES_PATH, e);
     }
   }
 
-  private final ScenarioRunner scenarioRunner;
   private final String initialURI;
   private final WadoInstance instance;
   private final RequestBroker rb;
 
   private final boolean saveFile;
 
-  public RunGetWadoInstance(ScenarioRunner scenarioRunner,
-      String initialURI,
-      WadoInstance instance,
-      RequestBroker rb,
-      boolean saveFile) {
-    this.scenarioRunner = scenarioRunner;
+  public RunGetWadoInstance(String initialURI, WadoInstance instance, RequestBroker rb, boolean saveFile) {
     this.initialURI = initialURI;
     this.instance = instance;
     this.rb = rb;
@@ -51,7 +45,7 @@ public class RunGetWadoInstance extends AbstractScenario {
   public RunGetWadoInstance call() {
 
     final String wadoLink = String.format(
-          "%s?requestType=WADO&contentType=application/dicom&studyUID=%s&seriesUID=%s1&objectUID=%s", initialURI,
+        "%s?requestType=WADO&contentType=application/dicom&studyUID=%s&seriesUID=%s1&objectUID=%s", initialURI,
         instance.getStudyInstanceUid(), instance.getSeriesInstanceUid(), instance.getSopInstanceUid());
 
     try {
@@ -68,8 +62,5 @@ public class RunGetWadoInstance extends AbstractScenario {
       LOGGER.error("error in getting bytes", e);
     }
     return this;
-
   }
-
-
 }
